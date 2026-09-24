@@ -10,10 +10,13 @@ Application de pilotage QSE organisée en trois pôles : Environnement, Sécurit
 - Audits, plan d’actions transversal, actions liées aux fiches d’origine et échéancier commun.
 - Statuts et contrôles adaptés à chaque module, conservation des versions et protection contre les modifications concurrentes.
 - Exports CSV et démonstration séparée en lecture seule.
+- Comptes individuels : lecteur (consultation/export), contributeur (fiches), administrateur (fiches et utilisateurs). Sessions protégées et changement obligatoire du mot de passe initial.
 
 ## Périmètre
 
-Le suivi des AT est interne et ne transmet pas de déclaration officielle. La veille réglementaire est manuelle. Les documents sont référencés par liens ; leurs fichiers ne sont pas stockés par cette version. Les validations ne sont pas des signatures électroniques. La cotation gravité × fréquence est indicative et doit être adaptée à la méthode interne. L’accès du site est actuellement privé ; les rôles métiers et notifications automatiques ne sont pas implémentés.
+Le suivi des AT est interne et ne transmet pas de déclaration officielle. La veille réglementaire est manuelle. Les documents sont référencés par liens ; leurs fichiers ne sont pas stockés par cette version. Les validations ne sont pas des signatures électroniques. La cotation gravité × fréquence est indicative et doit être adaptée à la méthode interne. L’accès au site reste limité par la liste de visiteurs autorisés sur la plateforme d’hébergement. Les notifications automatiques ne sont pas implémentées.
+
+Les comptes administrateurs initiaux sont créés lors du premier accès à l’application. Leurs mots de passe initiaux doivent être remplacés avant toute consultation des fiches. Ne stockez jamais de mots de passe dans le dépôt ni dans des fiches QSE. Un nouvel utilisateur doit aussi être autorisé à visiter le site par la plateforme d’hébergement.
 
 ## Développement et vérifications
 
