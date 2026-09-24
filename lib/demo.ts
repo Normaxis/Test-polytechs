@@ -1,0 +1,17 @@
+import { blank, dateToday, type QRecord } from './workflows';
+export function demoRecords():QRecord[]{const date=(delta:number)=>{const d=new Date(dateToday()+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+delta);return d.toISOString().slice(0,10)};const r=(id:string,kind:string,title:string,domain:string,status:string,details:Record<string,string>,due=7,sourceId=''):QRecord=>({...blank,id:'demo-'+id,kind,title,domain,status,details,owner:'Équipe QSE · exemple',due:date(due),revision:1,sourceId:sourceId?'demo-'+sourceId:'',created:new Date().toISOString()});return [
+r('danger','Situations dangereuses','Voie piétonne encombrée','Sécurité','Actions en cours',{date:date(-2),place:'Zone logistique',danger:'Croisement piétons / engins',immediate:'Zone balisée et dégagée'},3),
+r('action','Action','Revoir le marquage de la voie piétonne','Sécurité','En cours',{measure:'Revoir le marquage puis contrôler sa visibilité.'},-1,'danger'),
+r('action2','Action','Vérifier les rétentions de stockage','Environnement','À faire',{measure:'Contrôler les rétentions et documenter les écarts.'},5,'aspect'),
+r('dechet','Gestion des déchets','Enlèvement de films d’emballage','Environnement','Enlevé',{code:'15 01 02',quantity:'420',date:date(-3),collector:'Prestataire · exemple',treatment:'Valorisation matière',destination:'Installation · exemple',dangerous:'Non'},7),
+r('aspect','Analyse environnementale','Stockage de matières liquides','Environnement','Évalué',{activity:'Stockage',aspect:'Déversement accidentel',impact:'Pollution du sol',severity:'4',frequency:'2',controls:'Rétention et contrôle visuel',evaluated:date(-10),situation:'Urgence'},30),
+r('rse','RSE','Réduire les déchets de conditionnement','Environnement','En cours',{axis:'Environnement',goal:'Réduire les déchets par tonne produite',indicator:'kg / tonne produite',baseline:'8',target:'6',actual:'7',period:'Année en cours',measured:date(-1)},60),
+r('at','Accidents du travail','Incident pendant une manutention','Sécurité','En analyse',{date:date(-5),place:'Atelier · exemple',circumstances:'Événement fictif pour illustrer le registre.',immediate:'Zone sécurisée',person:'XX'},2),
+r('duerp','DUERP','Manutention de charges','Sécurité','Évalué',{unit:'Conditionnement',activity:'Palettisation',danger:'Port de charges',exposure:'Opérateurs',severity:'3',frequency:'4',controls:'Aide à la manutention',evaluated:date(-15)},45),
+r('epi','EPI','Dotation de lunettes de protection','Sécurité','En service',{equipment:'Lunettes de protection',assignee:'Production · exemple',quantity:'12',date:date(-30)},4),
+r('pdp','Plans de prévention','Intervention de maintenance','Sécurité','À préparer',{contractor:'Entreprise extérieure · exemple',operation:'Maintenance préventive',place:'Atelier',start:date(10),end:date(12)},8),
+r('doc','Gestion documentaire','Instruction de contrôle au poste','Qualité','Brouillon',{reference:'INS-EXEMPLE-01',version:'1',category:'Instruction'},14),
+r('reg','Réglementation','Vérification d’une exigence applicable','Qualité','À évaluer',{reference:'Référence à renseigner',scope:'Périmètre à définir',requirement:'Exemple de fiche de veille manuelle'},10),
+r('nc','Amélioration continue','Écart de conditionnement','Qualité','À analyser',{origin:'Non-conformité',finding:'Écart fictif de conditionnement'},6),
+r('audit','Audit','Audit terrain de l’atelier','Sécurité','Planifié',{scope:'Atelier · exemple',reference:'Référentiel interne',auditor:'Auditeur · exemple'},9)
+];}
