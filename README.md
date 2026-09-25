@@ -169,14 +169,28 @@ The portable build runs Vinext directly without a host `timeout` command. The ma
 - [vinext Documentation](https://github.com/cloudflare/vinext)
 - [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
 
-### Tableaux de bord par unité
+### Équipes, rangs et tableaux de bord
 
-`/unites` propose un tableau partagé pour chaque unité du DUERP. Choisir une unité,
-puis **Personnaliser** pour ajouter, retirer, déplacer ou agrandir les blocs.
-**Enregistrer le tableau** conserve la configuration, les notes et les mesures
-manuelles de cette unité ; **Annuler** revient à la dernière configuration.
-Les lecteurs consultent, les contributeurs et administrateurs personnalisent.
-Un conflit de version empêche d'écraser la saisie d'un autre utilisateur.
+Le bandeau gauche organise Direction (rang 1) et les services RH, QSSE,
+Production et R&D (rang 2). Les administrateurs peuvent ajouter ou modifier
+les équipes, leur rang et leur rattachement. Un service de rang 2 doit être
+rattaché à une équipe de rang 1 ; une équipe possédant des services ne peut
+pas être rétrogradée. Le rang ne modifie jamais les droits d’accès.
+
+Dans `/unites`, **Ouvrir l’équipe** affiche tous ses tableaux. **Nouveau tableau**
+crée une configuration indépendante : titre, équipe et périmètre DUERP
+(aucun, une unité ou tout le site). **Personnaliser** permet d'ajouter, retirer,
+déplacer et agrandir les blocs, renseigner les notes et indicateurs manuels,
+renommer le tableau ou le déplacer dans une autre équipe. **Enregistrer le tableau**
+conserve les modifications ; **Annuler** revient à la version précédente.
+Les lecteurs consultent ; contributeurs et administrateurs créent et modifient
+les tableaux. Les modifications concurrentes sont protégées par révision.
+
+Migration 0007 : les tableaux par unité existants sont copiés dans QSSE,
+avec contenu, révision et périmètre conservés. Les liens `/unites?unit=UT1`
+restent valides. Aucun rattachement d’unité à un service métier n’est déduit.
+Les nouveaux tableaux d'équipe commencent avec des notes et un indicateur manuel ;
+l’utilisateur choisit explicitement un périmètre pour les blocs automatiques.
 
 Les blocs DUERP utilisent les cotations et couleurs de l'évaluation, avec les
 anomalies signalées séparément. Les actions ouvertes couvrent toutes les années ;
@@ -186,6 +200,6 @@ personnalisés restent des saisies manuelles datées, sans comparaison automatiq
 à l'objectif. Les fiches QSE générales ne sont pas agrégées par unité tant qu'elles
 ne disposent pas d'un rattachement explicite à l'unité.
 
-Configuration persistée dans `unit_dashboards` (migration 0006). Contrôles métier :
-`node tests/unit-dashboard.mjs`. API : `GET /api/dashboards`,
-`GET /api/dashboards?unit=UT1`, `POST /api/dashboards` avec unité, révision et tableau.
+API : `GET /api/dashboards` (arborescence), `GET /api/dashboards?id=…`
+(contenu et données du périmètre), `POST /api/dashboards` avec les actions
+`team`, `create` ou `save`. Tables `teams` et `team_dashboards`.
