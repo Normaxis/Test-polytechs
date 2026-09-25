@@ -1,8 +1,0 @@
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
-export const records = sqliteTable('records', {id:text('id').primaryKey(),title:text('title').notNull(),kind:text('kind').notNull(),domain:text('domain').notNull(),status:text('status').notNull(),priority:text('priority').notNull(),owner:text('owner').notNull(),due:text('due').notNull(),description:text('description').notNull(),url:text('url').notNull(),details:text('details').notNull().default('{}'),created:text('created').notNull(),updated:text('updated').notNull().default(''),revision:integer('revision').notNull().default(1),sourceId:text('source_id').notNull().default('')});
-
-export const history=sqliteTable('record_history',{id:text('id').primaryKey(),recordId:text('record_id').notNull(),revision:integer('revision').notNull(),snapshot:text('snapshot').notNull(),savedAt:text('saved_at').notNull()},t=>[index('idx_history_record').on(t.recordId)]);
-
-export const users=sqliteTable('users',{id:text('id').primaryKey(),username:text('username').notNull().unique(),displayName:text('display_name').notNull(),role:text('role').notNull(),passwordHash:text('password_hash').notNull(),mustChangePassword:integer('must_change_password').notNull().default(1),createdAt:text('created_at').notNull()});
-export const sessions=sqliteTable('sessions',{tokenHash:text('token_hash').primaryKey(),userId:text('user_id').notNull().references(()=>users.id),expiresAt:integer('expires_at').notNull()},t=>[index('idx_sessions_user').on(t.userId)]);
-export const loginAttempts=sqliteTable('login_attempts',{username:text('username').primaryKey(),failures:integer('failures').notNull(),blockedUntil:integer('blocked_until').notNull()});

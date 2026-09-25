@@ -1,1 +1,0 @@
-ALTER TABLE `records` ADD `details` text DEFAULT '{}' NOT NULL;
