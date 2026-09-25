@@ -168,3 +168,24 @@ The portable build runs Vinext directly without a host `timeout` command. The ma
 
 - [vinext Documentation](https://github.com/cloudflare/vinext)
 - [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+
+### Tableaux de bord par unité
+
+`/unites` propose un tableau partagé pour chaque unité du DUERP. Choisir une unité,
+puis **Personnaliser** pour ajouter, retirer, déplacer ou agrandir les blocs.
+**Enregistrer le tableau** conserve la configuration, les notes et les mesures
+manuelles de cette unité ; **Annuler** revient à la dernière configuration.
+Les lecteurs consultent, les contributeurs et administrateurs personnalisent.
+Un conflit de version empêche d'écraser la saisie d'un autre utilisateur.
+
+Les blocs DUERP utilisent les cotations et couleurs de l'évaluation, avec les
+anomalies signalées séparément. Les actions ouvertes couvrent toutes les années ;
+le PAPRIPACT est filtré par année. Une échéance du jour n'est pas en retard (date
+Europe/Paris). Une action clôturée n'entre plus dans les retards. Les indicateurs
+personnalisés restent des saisies manuelles datées, sans comparaison automatique
+à l'objectif. Les fiches QSE générales ne sont pas agrégées par unité tant qu'elles
+ne disposent pas d'un rattachement explicite à l'unité.
+
+Configuration persistée dans `unit_dashboards` (migration 0006). Contrôles métier :
+`node tests/unit-dashboard.mjs`. API : `GET /api/dashboards`,
+`GET /api/dashboards?unit=UT1`, `POST /api/dashboards` avec unité, révision et tableau.
