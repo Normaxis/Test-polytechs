@@ -11,7 +11,7 @@ Application de pilotage QSE organisée en trois pôles : Environnement, Sécurit
 - Statuts et contrôles adaptés à chaque module, conservation des versions et protection contre les modifications concurrentes.
 - Exports CSV et démonstration séparée en lecture seule.
 - Comptes individuels : lecteur (consultation/export), contributeur (fiches), administrateur (fiches et utilisateurs). Sessions protégées et changement obligatoire du mot de passe initial.
-- Module EVRP dédié : 9 unités de travail, 41 fonctions, 680 situations du classeur 2026 et 10 actions PAPRIPACT, avec cotation F × G × IM × ID, révisions et mode opératoire imprimable.
+- Module EVRP dédié : 9 unités de travail, 41 fonctions, 680 situations du classeur 2026 et 10 actions PAPRIPACT, avec cotation F × G × IM × ID, révisions et mode opératoire imprimable. Les plages du classeur sont reprises : vert < 8, jaune 8 à moins de 20, orange 20 à 40, rouge > 40 ; les cotations absentes restent neutres.
 
 ## Périmètre
 
@@ -22,6 +22,8 @@ Les comptes administrateurs initiaux sont créés lors du premier accès à l’
 ## Évaluation des risques professionnels
 
 Le menu Sécurité → DUERP ouvre `/duerp`. Les données du classeur transmis sont préparées dans le source **privé** du Site, hors du dépôt GitHub public. À la première ouverture par un administrateur, l’import se lance par blocs sans écraser les fiches déjà modifiées. Il peut être repris depuis la page si nécessaire. Un autre déploiement du code démarre sans les données du classeur. Le contenu confidentiel `private/duerp-source.json` ne doit pas être poussé dans un dépôt public.
+
+L’onglet **PAPRIPACT · toutes unités** reprend les actions importées sans remplir les champs vides à leur place. Il présente une année de programme, le pilote, les conditions d’exécution, les ressources, le coût estimé, un indicateur de résultat, le calendrier et la vérification de l’efficacité. Les mesures proposées dans le DUERP sans action correspondante peuvent être reprises en une action liée à un risque ; les doublons textuels sont regroupés par unité et les correspondances suggérées restent à confirmer. La couleur du risque aide l’arbitrage, mais ne constitue pas une priorité décidée par l’entreprise. Une action clôturée exige la date de fin et une vérification renseignée.
 
 Le registre conserve la valeur issue du classeur et calcule séparément F × G × IM × ID. 89 lignes du fichier demandent une vérification, principalement des cotes de fréquence absentes et des résultats Excel en erreur. Une valeur déduite d’un libellé reste signalée et doit être confirmée par l’équipe QSE avant validation. Les risques de la production restent rattachés à UT1 : le fichier ne permet pas d’attribuer chaque risque à UT1a–UT1f. Les effectifs textuels et partagés ne sont pas additionnés.
 
