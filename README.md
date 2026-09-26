@@ -203,3 +203,27 @@ ne disposent pas d'un rattachement explicite à l'unité.
 API : `GET /api/dashboards` (arborescence), `GET /api/dashboards?id=…`
 (contenu et données du périmètre), `POST /api/dashboards` avec les actions
 `team`, `create` ou `save`. Tables `teams` et `team_dashboards`.
+
+### Éditeur de tableaux de bord
+
+**Personnaliser** ouvre l'éditeur ; **Aperçu** montre le résultat avant sauvegarde.
+Chaque tableau dispose d'une grille de 1 à 4 colonnes, d'une couleur de fond et
+d'un espacement réglable. Chaque bloc possède une largeur, une hauteur minimale,
+un fond, un accent, un alignement, une taille de texte et un titre masquable.
+Les couleurs de criticité DUERP conservent leur signification métier.
+
+Déplacement par poignée (souris) ou flèches (clavier/mobile), duplication de bloc,
+retrait avec rétablissement du dernier bloc retiré. **Dupliquer le tableau** crée
+une copie indépendante. Sur mobile, les blocs passent sur une colonne.
+
+Aux blocs DUERP/PAPRIPACT s'ajoutent textes, indicateurs manuels, titres de section,
+liens HTTP(S), listes de contrôle, tableaux libres et graphiques en barres
+à valeurs positives ou négatives. Les tableaux se saisissent cellule par cellule,
+avec en-têtes en première ligne ; les graphiques utilisent une paire libellé/valeur
+par ligne. Les cases des listes se modifient dans l'éditeur puis s'enregistrent.
+Les liens et documents sont ajoutés par URL ; les fichiers ne sont pas téléversés.
+
+Les contributeurs et administrateurs personnalisent les tableaux partagés ; les
+lecteurs consultent. Les anciens tableaux restent compatibles sans migration.
+Limites : 60 blocs, 50 éléments de liste, 50 lignes de données et 8 colonnes par
+tableau libre. Le serveur valide les paramètres et les URLs à chaque sauvegarde.
