@@ -17,8 +17,8 @@ const qsseSections=[
     ['PAPRIPACT','/duerp?tab=program',ClipboardList],
     ['Accidents du travail','/qse#'+encodeURIComponent('Accidents du travail'),HeartPulse],
     ['Situations dangereuses','/qse#'+encodeURIComponent('Situations dangereuses'),TriangleAlert],
-    ['EPI','/qse#EPI',EpiIcon],
-    ['Stock EPI','/epi-stock',EpiIcon],
+    ['Stock EPI · catalogue','/epi-stock',EpiIcon],
+    ['Dotations EPI','/qse#EPI',EpiIcon],
     ['Plans de prévention','/qse#'+encodeURIComponent('Plans de prévention'),ShieldAlert],
   ]},
   {name:'Environnement',links:[
