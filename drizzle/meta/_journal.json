@@ -85,6 +85,13 @@
       "when": 1790600717053,
       "tag": "0011_petite_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1790607171895,
+      "tag": "0012_narrow_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }
