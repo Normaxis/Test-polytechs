@@ -227,3 +227,49 @@ Les contributeurs et administrateurs personnalisent les tableaux partagés ; les
 lecteurs consultent. Les anciens tableaux restent compatibles sans migration.
 Limites : 60 blocs, 50 éléments de liste, 50 lignes de données et 8 colonnes par
 tableau libre. Le serveur valide les paramètres et les URLs à chaque sauvegarde.
+
+### Espace Dashboard / Tickets / Routines / Communication
+
+L'accueil ouvre désormais les tableaux sur un fond blanc avec les quatre onglets
+principaux en haut. Les modules QSE précédents sont conservés à `/qse` et le DUERP
+reste à `/duerp`. Un nouveau tableau commence vide ; les tableaux existants sont
+conservés avec leurs contenus et réglages.
+
+**Tickets** : titre, catégorie, description, attribution à plusieurs équipes,
+pilote, échéance, responsables et plan d'actions avec cases à cocher, pilotes et
+délais individuels. La clôture exige un pilote et toutes les actions réalisées.
+La fiche et les actions s'enregistrent ensemble. Les commentaires apparaissent
+à droite, avec auteur et horodatage ; ils se sauvegardent indépendamment.
+Les notifications sont internes au site (cloche) et personnelles aux comptes
+sélectionnés : pilote du ticket, pilotes d'actions et responsables. Les commentaires
+peuvent les notifier, et un bouton permet une relance manuelle. Aucun e-mail,
+SMS ni push externe n'est envoyé. Le compteur se rafraîchit à l'ouverture et chaque
+minute pendant l'utilisation.
+
+Les pièces jointes sont stockées dans le bucket privé `BUCKET`, leurs métadonnées
+dans D1. Accès authentifié pour ajout et téléchargement. Formats : JPEG, PNG, GIF,
+WebP, HEIC/HEIF, PDF, DOC/DOCX et XLS/XLSX ; 15 Mo par fichier, 20 fichiers par ticket.
+Les images compatibles avec le navigateur ont un aperçu ; HEIC et documents se
+téléchargent. Pas d'analyse antivirus intégrée. Les documents sont servis comme
+pièces jointes avec `nosniff`, les images seuls pouvant être affichées en ligne.
+
+**Routines** : grille d'audit et calendrier avec occurrence ponctuelle, quotidienne,
+hebdomadaire ou mensuelle, intervalle et fin facultative. Les heures sont affichées
+en heure France. Une récurrence mensuelle conserve le jour d'origine, ramené au
+dernier jour lorsqu'il n'existe pas (31 janvier → 28 février → 31 mars).
+Chaque occurrence a son propre compte rendu et état d'avancement, sans cocher les
+suivantes. Un compte rendu terminé doit renseigner tous les points. Les écarts
+peuvent ouvrir un ticket prérempli et lié à l'audit. Une routine ayant un compte
+rendu conserve son calendrier et sa grille ; suspendre l'ancienne et en créer
+une autre pour les changer. Les comptes rendus suspendus restent consultables.
+Les occurrences sont calculées à la lecture du calendrier, sans tâche serveur ni
+rappel automatique en arrière-plan.
+
+**Communication** : fil de messages avec service émetteur et équipes destinataires,
+filtrable selon ces deux critères. Le ciblage organise le fil ; il ne constitue
+pas une restriction de confidentialité entre équipes. Les rôles existants restent
+applicables (lecteur : consultation ; contributeur/admin : saisie).
+
+Migration 0008 : tables hub dédiées, sans modification des données QSE ou EVRP.
+API `/api/hub` et `/api/ticket-files`. Les fiches et comptes rendus sont protégés
+contre l'écrasement par révisions concurrentes. Tests métier : `node tests/hub.mjs`.
