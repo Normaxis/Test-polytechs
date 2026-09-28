@@ -78,6 +78,13 @@
       "when": 1790583000000,
       "tag": "0010_services",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1790600717053,
+      "tag": "0011_petite_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }

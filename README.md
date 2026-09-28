@@ -19,6 +19,12 @@ Le suivi des AT est interne et ne transmet pas de déclaration officielle. La ve
 
 Les comptes administrateurs initiaux sont créés lors du premier accès à l’application. Leurs mots de passe initiaux doivent être remplacés avant toute consultation des fiches. Ne stockez jamais de mots de passe dans le dépôt ni dans des fiches QSE. Un nouvel utilisateur doit aussi être autorisé à visiter le site par la plateforme d’hébergement.
 
+## Stock des EPI
+
+Le service QSSE propose `/epi-stock`, distinct du registre des dotations EPI. Le catalogue interne provient de l’onglet « Nouvelle codification » du classeur transmis, mis à jour le 19 mai 2026 : 106 codes uniques. Les doublons du fichier sont regroupés par code ; l’ancien onglet du 9 mars n’est pas fusionné automatiquement. Le fichier ne contient pas de quantités : le stock reste « non inventorié » jusqu’au premier comptage. Un administrateur lance une fois l’import depuis la page. Les données préparées sont dans `private/epi-catalog.json`, exclues du miroir GitHub public.
+
+Les contributeurs enregistrent les inventaires, entrées et sorties avec un historique daté. Une sortie exige un bénéficiaire ou service et ne peut rendre le solde négatif. Le seuil d’alerte et l’emplacement sont configurables par référence. Le CSV exporte les soldes affichés. Une dotation dans le registre EPI ne débite pas automatiquement le magasin : pour éviter un solde implicite erroné, sa sortie doit être consignée dans le stock.
+
 ## Évaluation des risques professionnels
 
 Le service QSSE regroupe les accès directs au DUERP, au PAPRIPACT et aux registres QSE. Le DUERP ouvre `/duerp`. Les données du classeur transmis sont préparées dans le source **privé** du Site, hors du dépôt GitHub public. À la première ouverture par un administrateur, l’import se lance par blocs sans écraser les fiches déjà modifiées. Il peut être repris depuis la page si nécessaire. Un autre déploiement du code démarre sans les données du classeur. Le contenu confidentiel `private/duerp-source.json` ne doit pas être poussé dans un dépôt public.
