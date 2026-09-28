@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useState,type CSSProperties} from 'react';
-import {LayoutDashboard,Users,BriefcaseBusiness,CalendarDays,FlaskConical,Factory,Truck,HardHat,ShoppingCart,HeartHandshake,Wrench,Monitor,ShieldCheck,Lightbulb,Network} from 'lucide-react';
+import {LayoutDashboard,FileText,ClipboardList,TriangleAlert,HardHat as EpiIcon,Recycle,Leaf,BookOpen,FileCheck2,Sparkles,HeartPulse,ShieldAlert,LayoutList,Users,BriefcaseBusiness,CalendarDays,FlaskConical,Factory,Truck,HardHat,ShoppingCart,HeartHandshake,Wrench,Monitor,ShieldCheck,Lightbulb,Network} from 'lucide-react';
 export type Team={id:string;name:string;rank:number;parent_id:string|null;revision:number};
 export type BoardLink={id:string;team_id:string;title:string;unit_code:string};
 
@@ -10,6 +10,27 @@ const groups=[
   {name:'Réalisation',ids:['commercial','planification','rd','production','laboratoire','logistique'],accent:'#0875bb'},
   {name:'Support',ids:['travaux-neufs','achats','rh','procedes','maintenance','informatique'],accent:'#df6924'},
 ];
+
+const qsseSections=[
+  {name:'Prévention',links:[
+    ['DUERP','/duerp',FileText],
+    ['PAPRIPACT','/duerp?tab=program',ClipboardList],
+    ['Accidents du travail','/qse#'+encodeURIComponent('Accidents du travail'),HeartPulse],
+    ['Situations dangereuses','/qse#'+encodeURIComponent('Situations dangereuses'),TriangleAlert],
+    ['EPI','/qse#EPI',EpiIcon],
+    ['Plans de prévention','/qse#'+encodeURIComponent('Plans de prévention'),ShieldAlert],
+  ]},
+  {name:'Environnement',links:[
+    ['Gestion des déchets','/qse#'+encodeURIComponent('Gestion des déchets'),Recycle],
+    ['Analyse environnementale','/qse#'+encodeURIComponent('Analyse environnementale'),Leaf],
+    ['RSE','/qse#RSE',Sparkles],
+  ]},
+  {name:'Qualité',links:[
+    ['Gestion documentaire','/qse#'+encodeURIComponent('Gestion documentaire'),BookOpen],
+    ['Réglementation','/qse#'+encodeURIComponent('Réglementation'),FileCheck2],
+    ['Amélioration continue','/qse#'+encodeURIComponent('Amélioration continue'),LayoutList],
+  ]},
+] as const;
 const management=new Set(groups[0].ids);
 const realization=new Set(groups[1].ids);
 function theme(id:string):CSSProperties{
@@ -29,6 +50,8 @@ export function TeamTree({teams,boards,selected,disabled,onSelect,onTeam}:{teams
           <small>Rang {t.rank}</small>
         </summary>
         <div className="team-boards">
+          {t.id==='qsse'&&<div className="qsse-shortcuts">{qsseSections.map(section=><div className="qsse-section" key={section.name}><p>{section.name}</p>{section.links.map(([label,href,LinkIcon])=><a href={href} key={label}><LinkIcon size={15} aria-hidden="true"/><span>{label}</span></a>)}</div>)}</div>}
+          {t.id==='qsse'&&teamBoards.length>0&&<p className="qsse-board-label">Tableaux de bord</p>}
           {teamBoards.map(b=>onSelect?<button key={b.id} disabled={disabled} aria-current={selected===b.id?'page':undefined} onClick={()=>onSelect(b.id)}><LayoutDashboard size={14}/><span>{b.title}</span></button>:<a key={b.id} href={'/unites?board='+encodeURIComponent(b.id)}><LayoutDashboard size={14}/><span>{b.title}</span></a>)}
           {onTeam&&<button disabled={disabled} className="team-open" onClick={()=>onTeam(t)}>Ouvrir {t.rank===1?'la direction':'le service'}</button>}
           {!teamBoards.length&&<small className="team-no-board">Aucun tableau</small>}

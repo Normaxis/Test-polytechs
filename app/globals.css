@@ -156,3 +156,11 @@ body{font-family:Roboto,Arial,Helvetica,sans-serif;color:#202d35}button,a,input,
 .team-node .team-boards>a,.team-node .team-boards>button{font-size:12px;padding:6px 8px;margin:1px 0;border-radius:4px}
 .team-node .team-boards [aria-current=page]{background:#edf5fa;color:var(--team-accent)}
 .team-node .team-boards .team-open{color:var(--team-accent)}
+
+.qsse-shortcuts{padding:3px 0 7px}
+.qsse-section+.qsse-section{margin-top:10px}
+.qsse-section p,.qsse-board-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#8494a4;margin:8px 8px 4px}
+.qsse-section a{display:flex;align-items:center;gap:9px;text-decoration:none;color:#3e576d;font-size:12px;line-height:1.35;padding:6px 8px;border-radius:4px}
+.qsse-section a svg{color:#74369a;flex:none}
+.qsse-section a:hover,.qsse-section a:focus-visible{background:#f4f1f8;color:#57247d}
+.qsse-board-label{margin-top:11px;padding-top:8px;border-top:1px solid #e7ecf1}
