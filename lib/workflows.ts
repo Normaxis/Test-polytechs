@@ -11,7 +11,7 @@ Audit:[f('scope','Périmètre / atelier'),f('reference','Référentiel / critèr
 'Plans de prévention':[f('contact','Contact de l’entreprise extérieure'),f('validator','Validation interne par')],
 'Gestion documentaire':[f('approver','Approbateur'),f('approved','Date d’approbation','date')],
 'RSE':[f('period','Période de suivi'),f('measured','Date de mesure','date')],
-'Accidents du travail':[f('analysis','Analyse des causes'),f('externalReference','Référence de la déclaration externe (si effectuée)')]
+'Accidents du travail':[f('analysis','Analyse des causes'),f('employeeNoticeAt','Date de signalement à l’employeur','date'),f('declarant','Responsable de la démarche externe'),f('externalDeclaredAt','Date de déclaration à l’Assurance Maladie','date'),f('externalReference','Référence de la déclaration externe')]
 };
 function fields(kind:string){const base=modules[kind]?.fields||[];const removed=kind==='Gestion documentaire'?['validation','review']:kind==='Plans de prévention'?['validation']:kind==='Réglementation'?['compliance']:kind==='EPI'?['check']:[];return [...base.filter(f=>!removed.includes(f.key)),...(extras[kind]||[]).filter(f=>!base.some(b=>b.key===f.key))];}
 function w(kind:string,noun:string,states:string[],closed:string[],dueLabel:string,columns:string[],required:string[],tip?:string):Workflow{return {noun,states,closed,dueLabel,columns,required,fields:fields(kind),tip};}
@@ -47,7 +47,7 @@ if(r.status!==flow.states[0]&&!r.owner.trim())errors.push('Attribuez un responsa
 if(r.kind==='Action'){if(['En cours','À vérifier','Clôturée'].includes(r.status)&&!r.due)errors.push('Une action engagée doit avoir une échéance.');if(['À vérifier','Clôturée'].includes(r.status))need('result');if(r.status==='Clôturée'){['verifiedBy','verifiedDate','effectiveness'].forEach(k=>need(k));}}
 if(['DUERP','Analyse environnementale'].includes(r.kind)&&r.status==='Évalué'){['severity','frequency','controls','evaluated'].forEach(k=>need(k));if(!r.due)errors.push('Planifiez la prochaine révision.');}
 if(r.kind==='Gestion des déchets'&&r.status!=='Prévu'){['quantity','date','treatment','destination'].forEach(k=>need(k));if(r.status==='Dossier complet'&&r.details.dangerous==='Oui')need('bsd');}
-if(['Accidents du travail','Situations dangereuses'].includes(r.kind)&&closed(r)){need('immediate');if(r.kind==='Accidents du travail')need('analysis');}
+if(['Accidents du travail','Situations dangereuses'].includes(r.kind)&&closed(r)){need('immediate');if(r.kind==='Accidents du travail'){need('analysis');need('externalDeclaredAt');need('externalReference');}}
 if(r.kind==='Plans de prévention'){if(r.details.start&&r.details.end&&r.details.end<r.details.start)errors.push('La fin d’intervention précède le début.');if(['Validé','Clôturé'].includes(r.status)){need('inspection');need('risks');need('measures');need('validator');if(!r.url)errors.push('Ajoutez le lien du plan validé.');if(r.details.inspection>r.details.start)errors.push('L’inspection doit précéder ou coïncider avec le début.');}}
 if(r.kind==='Gestion documentaire'&&r.status==='Approuvé'){need('approver');need('approved');if(!r.url)errors.push('Ajoutez le lien du document approuvé.');if(!r.due)errors.push('Planifiez la prochaine révision du document.');}
 if(r.kind==='Réglementation'&&r.status!=='À évaluer'){need('checked');need('proof');if(!r.url)errors.push('Ajoutez le lien vers la source réglementaire.');}
@@ -55,7 +55,7 @@ if(r.kind==='EPI'&&r.status==='En service'){need('date');if(Number(r.details.qua
 if(r.kind==='Audit'&&['Réalisé','Clôturé'].includes(r.status)){need('date');need('auditor');need('finding');if(closed(r))need('conclusion');}
 if(r.kind==='RSE'&&closed(r)){need('target');need('actual');need('measured');}
 if(r.kind==='Amélioration continue'&&closed(r)){need('cause');need('effectiveness');}
-const factualDates=['verifiedDate','evaluated','approved','checked','measured'];if(['Accidents du travail','Situations dangereuses'].includes(r.kind))factualDates.push('date');for(const k of factualDates)if(r.details[k]&&r.details[k]>dateToday())errors.push(`${fieldLabel(r.kind,k)} ne peut pas être dans le futur.`);
+const factualDates=['verifiedDate','evaluated','approved','checked','measured','externalDeclaredAt','employeeNoticeAt'];if(['Accidents du travail','Situations dangereuses'].includes(r.kind))factualDates.push('date');for(const k of factualDates)if(r.details[k]&&r.details[k]>dateToday())errors.push(`${fieldLabel(r.kind,k)} ne peut pas être dans le futur.`);
 if(r.kind==='Audit'&&r.status==='Planifié'&&!r.due)errors.push('Un audit planifié doit avoir une date prévue.');
 if(r.sourceId){const source=all.find(x=>x.id===r.sourceId);if(source&&closed(source)&&!r.id)errors.push('Rouvrez la fiche d’origine avant de créer une action.');if(r.kind!=='Action'||!source||source.kind==='Action')errors.push('L’origine doit être une fiche existante autre qu’une action.');}
 if(closed(r)&&r.kind!=='Action'&&all.some(x=>x.kind==='Action'&&x.sourceId===r.id&&!closed(x)))errors.push('Clôturez les actions liées avant de clôturer cette fiche.');

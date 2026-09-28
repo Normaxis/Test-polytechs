@@ -24,5 +24,6 @@ assert(validate({...blank,title:'Date invalide',due:'2026-02-30',details:{measur
 assert(validate({...blank,title:'A',sourceId:'inconnu',details:{measure:'Faire'}}).some(e=>e.includes('origine')));
 const old=normalize({...blank,status:'Terminé',kind:'Gestion documentaire',details:JSON.stringify({validation:'Approuvé',review:'2026-12-01'})});assert.equal(old.status,'Approuvé');assert.equal(old.due,'2026-12-01');assert.equal(closed(old),false);
 assert(validate({...blank,title:'Audit',kind:'Audit',status:'Planifié',owner:'QSE',details:{scope:'Atelier',reference:'Interne'}}).some(e=>e.includes('date prévue')));
+const accident={...blank,title:'AT atelier',kind:'Accidents du travail',status:'Clôturé',owner:'QSE',details:{date:'2026-01-01',place:'Atelier',circumstances:'Chute',immediate:'Mise en sécurité',analysis:'Analyse effectuée'}};assert(validate(accident).some(e=>e.includes('Référence de la déclaration externe')));assert.equal(validate({...accident,details:{...accident.details,externalDeclaredAt:'2026-01-02',externalReference:'DAT-123'}}).length,0);
 console.log('12 contrôles métier réussis : clôture, liens, dates, révisions, compatibilité des anciennes fiches.');
 }finally{fs.rmSync(dir,{recursive:true,force:true})}
