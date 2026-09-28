@@ -5,18 +5,22 @@ export type Team={id:string;name:string;rank:number;parent_id:string|null;revisi
 export type BoardLink={id:string;team_id:string;title:string;unit_code:string};
 
 const icons={direction:BriefcaseBusiness,qsse:ShieldCheck,commercial:BriefcaseBusiness,planification:CalendarDays,rd:Lightbulb,production:Factory,laboratoire:FlaskConical,logistique:Truck,'travaux-neufs':HardHat,achats:ShoppingCart,rh:HeartHandshake,procedes:Network,maintenance:Wrench,informatique:Monitor} as const;
-const management=new Set(['direction','qsse']);
-const realization=new Set(['commercial','planification','rd','production','laboratoire','logistique']);
+const groups=[
+  {name:'Management',ids:['direction','qsse'],accent:'#74369a'},
+  {name:'Réalisation',ids:['commercial','planification','rd','production','laboratoire','logistique'],accent:'#0875bb'},
+  {name:'Support',ids:['travaux-neufs','achats','rh','procedes','maintenance','informatique'],accent:'#df6924'},
+];
+const management=new Set(groups[0].ids);
+const realization=new Set(groups[1].ids);
 function theme(id:string):CSSProperties{
-  const [accent,soft]=management.has(id)?['#74369a','#f4eafa']:realization.has(id)?['#0875bb','#e9f5fc']:['#df6924','#fff0e6'];
-  return {'--team-accent':accent,'--team-soft':soft} as CSSProperties;
+  const accent=management.has(id)?groups[0].accent:realization.has(id)?groups[1].accent:groups[2].accent;
+  return {'--team-accent':accent} as CSSProperties;
 }
 
 export function TeamTree({teams,boards,selected,disabled,onSelect,onTeam}:{teams:Team[];boards:BoardLink[];selected?:string;disabled?:boolean;onSelect?:(id:string)=>void;onTeam?:(team:Team)=>void}){
   function teamNode(t:Team){
     const Icon=icons[t.id as keyof typeof icons]||Users;
     const teamBoards=boards.filter(b=>b.team_id===t.id);
-    const children=teams.filter(c=>c.parent_id===t.id&&c.rank===2);
     return <div className={'team-node rank-'+t.rank} key={t.id} style={theme(t.id)}>
       <details>
         <summary aria-label={'Afficher les tableaux de '+t.name}>
@@ -30,9 +34,12 @@ export function TeamTree({teams,boards,selected,disabled,onSelect,onTeam}:{teams
           {!teamBoards.length&&<small className="team-no-board">Aucun tableau</small>}
         </div>
       </details>
-      {children.map(teamNode)}
     </div>;
   }
-  return <nav className="team-tree" aria-label="Services et tableaux de bord">{teams.filter(t=>t.rank===1).map(teamNode)}</nav>;
+  const known=new Set(groups.flatMap(g=>g.ids));
+  const sections=groups.map(g=>({...g,items:g.ids.flatMap(id=>teams.filter(t=>t.id===id))}));
+  const other=teams.filter(t=>!known.has(t.id)).sort((a,b)=>a.rank-b.rank||a.name.localeCompare(b.name,'fr'));
+  if(other.length)sections.push({name:'Autres services',ids:[],accent:groups[2].accent,items:other});
+  return <nav className="team-tree" aria-label="Services et tableaux de bord">{sections.filter(g=>g.items.length).map(g=><section className="team-group" key={g.name} style={{'--team-accent':g.accent} as CSSProperties}><h3>{g.name}</h3>{g.items.map(teamNode)}</section>)}</nav>;
 }
 export function HomeTeamNavigation(){const [data,setData]=useState<{teams:Team[];boards:BoardLink[]}|null>(null),[error,setError]=useState(false);useEffect(()=>{const c=new AbortController();fetch('/api/dashboards',{signal:c.signal}).then(async r=>{if(!r.ok)throw Error();setData(await r.json())}).catch(e=>{if(e.name!=='AbortError')setError(true)});return()=>c.abort()},[]);return <div className="home-team-navigation"><p className="navlabel">SERVICES ET TABLEAUX</p>{data?<TeamTree teams={data.teams} boards={data.boards}/>:<a href="/unites">{error?'Ouvrir les services':'Chargement des services…'}</a>}</div>}

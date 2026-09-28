@@ -138,16 +138,21 @@ body{font-family:Roboto,Arial,Helvetica,sans-serif;color:#202d35}button,a,input,
 .at-guidance{border-left:4px solid #e28a2f;background:#fff7eb;padding:13px 15px;margin:10px 0 18px;color:#563c1d}.at-guidance strong{font-size:15px}.at-guidance p{font-size:14px;line-height:1.5;margin:7px 0}.at-guidance a{color:#005eaa;text-decoration:underline;font-size:14px}
 .team-access-panel{margin-top:30px;border-top:1px solid #dce5ee;padding-top:22px}.team-access-panel>p{font-size:14px;line-height:1.5;color:#52657a}.team-access-group{border:1px solid #dce5ee;border-radius:6px;margin:10px 0;padding:12px}.team-access-group summary{font-weight:650;cursor:pointer}.team-access-switch{display:flex;align-items:center;gap:8px;margin:14px 0;font-size:14px}.team-access-users{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.team-access-users label{border:1px solid #e4eaf1;padding:9px;border-radius:5px;font-size:14px}.team-access-users small{display:block;font-size:12px;color:#61758a}.team-access-users select{display:block;width:100%;margin-top:8px;border:1px solid #b8cadc;padding:7px;background:#fff}
 
-/* Navigation des services : repliée au chargement, repères visuels de l'organigramme. */
-.team-tree{display:grid;gap:3px}
-.team-node.rank-2{margin-left:12px;border-left:1px solid #dbe3ec;padding-left:8px}
-.team-node summary{border-left:3px solid var(--team-accent);background:var(--team-soft);padding:8px 9px;gap:8px;min-height:42px;color:#263b51}
-.team-node summary:hover{filter:brightness(.975)}
-.team-node summary:before{content:'▸';color:var(--team-accent);font-size:12px}
-.team-node details[open]>summary:before{content:'▾'}
-.team-node summary .team-pictogram{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:6px;background:var(--team-accent);color:#fff}
-.team-node summary .team-name{flex:1;min-width:0;overflow-wrap:anywhere}
-.team-node summary small{color:var(--team-accent);font-weight:600}
-.team-node .team-boards{padding-left:19px;border-left:2px solid var(--team-soft);margin-left:12px}
-.team-node .team-boards [aria-current=page]{background:var(--team-soft);color:var(--team-accent)}
+/* Navigation des services : listes légères par famille, tableaux repliés. */
+.team-tree{display:block;color:#283f54}
+.team-group{margin:14px 0 19px}
+.team-group:first-child{margin-top:8px}
+.team-group h3{display:flex;align-items:center;gap:9px;margin:0 7px 5px;font-size:11px;font-weight:750;letter-spacing:.11em;text-transform:uppercase;color:var(--team-accent)}
+.team-group h3:after{content:'';height:1px;flex:1;background:#dce5ec}
+.team-node.rank-2{margin:0;border:0;padding:0}
+.team-node summary{border:0;border-radius:5px;background:transparent;min-height:42px;padding:7px 9px;gap:9px;font-weight:570;color:#30495f}
+.team-node summary:hover,.team-node details[open]>summary{background:#f4f7fa;filter:none}
+.team-node summary:before{order:3;content:'⌄';font-size:16px;line-height:1;color:#8b9aaa;transform:rotate(-90deg);transition:transform .15s}
+.team-node details[open]>summary:before{content:'⌄';transform:none;color:var(--team-accent)}
+.team-node summary .team-pictogram{display:grid;place-items:center;width:21px;height:21px;flex:none;border-radius:0;background:transparent;color:var(--team-accent)}
+.team-node summary .team-name{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px;line-height:1.35}
+.team-node summary small{order:2;font-size:11px;color:#8a9aaa;font-weight:500}
+.team-node .team-boards{margin:1px 7px 6px 19px;padding:3px 0 3px 11px;border-left:1px solid #dce5ec}
+.team-node .team-boards>a,.team-node .team-boards>button{font-size:12px;padding:6px 8px;margin:1px 0;border-radius:4px}
+.team-node .team-boards [aria-current=page]{background:#edf5fa;color:var(--team-accent)}
 .team-node .team-boards .team-open{color:var(--team-accent)}
