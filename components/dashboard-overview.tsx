@@ -1,13 +1,17 @@
 'use client';
 import {useEffect,useMemo,useState} from 'react';
 import {CalendarDays,MessageSquareText,Play,ShieldCheck} from 'lucide-react';
+import {MetricChart,chartModes} from '@/components/metric-chart';
+import type {Widget} from '@/lib/unit-dashboard';
 import {occurrenceDates,todayParis,type Routine,type Row} from '@/lib/hub';
 
-type Ticket={id:string;data:{category:string;status:string;teams:string[]}};
+type Ticket={id:string;data:{title:string;category:string;status:string;teams:string[];due:string;pilot:string}};
 type Communication={id:string;data:{title:string;body:string;teams:string[];sourceTeam:string};created_at:string};
 type Run={routine_id?:string;routineId?:string;date:string;data:{completed:boolean}};
 
 export function DashboardOverview({teamId,teamName,refresh}:{teamId:string;teamName:string;refresh:number}){
+  const [chartMode,setChartMode]=useState<Widget['chartType']>('bar');
+  useEffect(()=>{const saved=localStorage.getItem('polytechs-overview-chart');if(saved&&Object.hasOwn(chartModes,saved))setChartMode(saved as Widget['chartType'])},[]);
   const [routines,setRoutines]=useState<Row<Routine>[]>([]),[runs,setRuns]=useState<Run[]>([]),[messages,setMessages]=useState<Communication[]>([]),[tickets,setTickets]=useState<Ticket[]>([]),[error,setError]=useState(false);
   const today=todayParis(),month=today.slice(0,7),from=month+'-01',to=month+'-'+String(new Date(Number(month.slice(0,4)),Number(month.slice(5,7)),0).getDate()).padStart(2,'0');
   useEffect(()=>{let live=true;setError(false);Promise.all([
@@ -27,6 +31,6 @@ export function DashboardOverview({teamId,teamName,refresh}:{teamId:string;teamN
       <article className="overview-card"><div className="overview-card-head"><h3><CalendarDays size={17}/> Routines</h3><a href="/routines">Calendrier →</a></div><div className="overview-routine"><strong>{error?'—':complete+' / '+events.length}</strong><span>audits terminés ce mois</span></div><p>{error?'Données indisponibles':next?'Prochain audit : '+next.routine.data.title+' · '+new Date(next.date+'T12:00:00').toLocaleDateString('fr-FR'):'Aucun audit à venir pour cette équipe'}</p></article>
       <article className="overview-card"><div className="overview-card-head"><h3><MessageSquareText size={17}/> Communication</h3><a href="/communication">Toutes →</a></div>{error?<p>Données indisponibles</p>:message?<><strong className="overview-message-title">{message.data.title}</strong><p className="overview-excerpt">{message.data.body}</p><small>{new Date(message.created_at).toLocaleDateString('fr-FR')}</small></>:<p>Aucune communication adressée à cette équipe.</p>}</article>
     </div>
-    <div className="overview-metrics">{categories.map(([category,color])=><a className="overview-metric" href="/tickets" key={category} style={{'--category-color':color} as React.CSSProperties}><div className="overview-band"><ShieldCheck size={16}/>{category}</div><div className="overview-metric-body"><span>Tickets ouverts</span><strong>{error?'—':open.filter(t=>t.data.category===category).length}</strong><small>Pour {teamName} · voir les actions →</small></div></a>)}</div>
+    <div className="overview-chart-controls"><span>Indicateurs · tickets de {teamName}</span><label>Graphique <select value={chartMode} onChange={e=>{const mode=e.target.value as Widget['chartType'];setChartMode(mode);localStorage.setItem('polytechs-overview-chart',mode||'bar')}}>{Object.entries(chartModes).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label></div><div className="overview-metrics">{categories.map(([category,color])=>{const related=tickets.filter(t=>t.data.teams.includes(teamId)&&t.data.category===category),opened=related.filter(t=>t.data.status!=='Clôturé').length,closed=related.length-opened;return <article className="overview-metric" key={category} style={{'--category-color':color} as React.CSSProperties}><div className="overview-band"><ShieldCheck size={16}/>{category}</div><div className="overview-metric-body"><span>Tickets ouverts</span><strong>{error?'—':opened}</strong><MetricChart title={'Tickets · '+category} mode={chartMode} points={error?[]:[{label:'Ouverts',value:opened},{label:'Clôturés',value:closed}]} caption={'Tickets attribués à '+teamName} detailsContent={<div className="overview-ticket-detail"><h3>Tickets de l’équipe</h3>{related.length?related.map(t=><a key={t.id} href={'/tickets?id='+encodeURIComponent(t.id)}><strong>{t.data.title}</strong><span>{t.data.status}{t.data.due?' · échéance '+new Date(t.data.due+'T12:00:00').toLocaleDateString('fr-FR'):''}</span></a>):<p>Aucun ticket dans cette catégorie.</p>}<a className="overview-all-tickets" href="/tickets">Ouvrir le plan d’action →</a></div>}/></div></article>})}</div>
   </section>
 }
