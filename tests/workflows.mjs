@@ -25,5 +25,8 @@ assert(validate({...blank,title:'A',sourceId:'inconnu',details:{measure:'Faire'}
 const old=normalize({...blank,status:'Terminé',kind:'Gestion documentaire',details:JSON.stringify({validation:'Approuvé',review:'2026-12-01'})});assert.equal(old.status,'Approuvé');assert.equal(old.due,'2026-12-01');assert.equal(closed(old),false);
 assert(validate({...blank,title:'Audit',kind:'Audit',status:'Planifié',owner:'QSE',details:{scope:'Atelier',reference:'Interne'}}).some(e=>e.includes('date prévue')));
 const accident={...blank,title:'AT atelier',kind:'Accidents du travail',status:'Clôturé',owner:'QSE',details:{date:'2026-01-01',place:'Atelier',circumstances:'Chute',immediate:'Mise en sécurité',analysis:'Analyse effectuée'}};assert(validate(accident).some(e=>e.includes('Référence de la déclaration externe')));assert.equal(validate({...accident,details:{...accident.details,externalDeclaredAt:'2026-01-02',externalReference:'DAT-123'}}).length,0);
-console.log('12 contrôles métier réussis : clôture, liens, dates, révisions, compatibilité des anciennes fiches.');
+const epi={...blank,kind:'EPI',domain:'Sécurité',title:'Dotation de lunettes',status:'En service',owner:'QSSE',details:{equipment:'Lunettes',assignee:'Atelier',quantity:'1.5',date:'2026-01-01'}};
+assert(validate(epi).some(e=>e.includes('nombre entier')),'Une demi pièce EPI doit être refusée');
+assert.equal(validate({...epi,details:{...epi.details,quantity:'2'}}).length,0,'Une dotation entière est acceptée');
+console.log('14 contrôles métier réussis : clôture, liens, dates, révisions, dotation EPI.');
 }finally{fs.rmSync(dir,{recursive:true,force:true})}

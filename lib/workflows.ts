@@ -51,7 +51,7 @@ if(['Accidents du travail','Situations dangereuses'].includes(r.kind)&&closed(r)
 if(r.kind==='Plans de prévention'){if(r.details.start&&r.details.end&&r.details.end<r.details.start)errors.push('La fin d’intervention précède le début.');if(['Validé','Clôturé'].includes(r.status)){need('inspection');need('risks');need('measures');need('validator');if(!r.url)errors.push('Ajoutez le lien du plan validé.');if(r.details.inspection>r.details.start)errors.push('L’inspection doit précéder ou coïncider avec le début.');}}
 if(r.kind==='Gestion documentaire'&&r.status==='Approuvé'){need('approver');need('approved');if(!r.url)errors.push('Ajoutez le lien du document approuvé.');if(!r.due)errors.push('Planifiez la prochaine révision du document.');}
 if(r.kind==='Réglementation'&&r.status!=='À évaluer'){need('checked');need('proof');if(!r.url)errors.push('Ajoutez le lien vers la source réglementaire.');}
-if(r.kind==='EPI'&&r.status==='En service'){need('date');if(Number(r.details.quantity)<=0)errors.push('Une dotation en service doit avoir une quantité supérieure à zéro.');}
+if(r.kind==='EPI'){const quantity=Number(r.details.quantity);if(r.details.quantity&&!Number.isSafeInteger(quantity))errors.push('La quantité remise doit être un nombre entier.');if(r.status==='En service'){need('date');if(quantity<=0)errors.push('Une dotation en service doit avoir une quantité supérieure à zéro.');}}
 if(r.kind==='Audit'&&['Réalisé','Clôturé'].includes(r.status)){need('date');need('auditor');need('finding');if(closed(r))need('conclusion');}
 if(r.kind==='RSE'&&closed(r)){need('target');need('actual');need('measured');}
 if(r.kind==='Amélioration continue'&&closed(r)){need('cause');need('effectiveness');}
