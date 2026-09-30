@@ -1,0 +1,1 @@
+export function serviceHref(path:string,teamId:string){const url=new URL(path,'https://polytechs.invalid');if(teamId)url.searchParams.set('team',teamId);else url.searchParams.delete('team');return url.pathname+url.search+url.hash}

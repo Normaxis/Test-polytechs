@@ -279,3 +279,9 @@ applicables (lecteur : consultation ; contributeur/admin : saisie).
 Migration 0008 : tables hub dédiées, sans modification des données QSE ou EVRP.
 API `/api/hub` et `/api/ticket-files`. Les fiches et comptes rendus sont protégés
 contre l'écrasement par révisions concurrentes. Tests métier : `node tests/hub.mjs`.
+
+## Navigation et ergonomie
+
+Le contexte `team` est conservé entre tableaux de bord, tickets, routines et communications. Les liens des cartes ouvrent la fiche concernée ; un nouveau ticket ou une routine peut reprendre le service sélectionné. La navigation mobile se replie et les listes de tickets et de travail sont paginées. L’espace EPI partage la navigation des autres modules et guide le premier inventaire.
+
+Les modifications QSE/EVRP et leurs historiques sont enregistrés dans un même lot transactionnel ; un conflit de révision ne produit pas de nouvelle ligne d’historique. Une action PAPRIPACT exige un pilote et une échéance dès qu’elle quitte « À définir ». Les formulaires DUERP protègent les saisies non enregistrées. `node tests/transactions.mjs` vérifie les handlers sur une base SQLite temporaire, y compris les conflits et les remises EPI.

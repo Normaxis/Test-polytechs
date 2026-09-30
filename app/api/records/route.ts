@@ -29,8 +29,8 @@ if(r.kind==='EPI'&&r.status==='En service'&&(!previous||previous.status==='À re
 }
 if(previous){
 const results=await db.batch([
-db.prepare('INSERT INTO record_history (id,record_id,revision,snapshot,saved_at) SELECT ?,?,?,?,? WHERE EXISTS (SELECT 1 FROM records WHERE id=? AND revision=?)').bind(crypto.randomUUID(),id,previous.revision,JSON.stringify(previous),now,id,previous.revision),
-db.prepare('UPDATE records SET title=?,domain=?,status=?,priority=?,owner=?,due=?,description=?,url=?,details=?,source_id=?,updated=?,revision=revision+1 WHERE id=? AND revision=?').bind(r.title.trim(),r.domain,r.status,r.priority,r.owner,r.due,r.description,r.url,details,r.sourceId||'',now,id,previous.revision)
-]);if(!results[1].meta.changes)return Response.json({error:'Modification concurrente. Fermez et rouvrez la fiche avant de réessayer.'},{status:409});
+db.prepare('UPDATE records SET title=?,domain=?,status=?,priority=?,owner=?,due=?,description=?,url=?,details=?,source_id=?,updated=?,revision=revision+1 WHERE id=? AND revision=?').bind(r.title.trim(),r.domain,r.status,r.priority,r.owner,r.due,r.description,r.url,details,r.sourceId||'',now,id,previous.revision),
+db.prepare('INSERT INTO record_history (id,record_id,revision,snapshot,saved_at) SELECT ?,?,?,?,? WHERE changes()=1').bind(crypto.randomUUID(),id,previous.revision,JSON.stringify(previous),now)
+]);if(!results[0].meta.changes)return Response.json({error:'Modification concurrente. Fermez et rouvrez la fiche avant de réessayer.'},{status:409});
 }else await db.prepare('INSERT INTO records (id,title,kind,domain,status,priority,owner,due,description,url,details,created,updated,revision,source_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(id,r.title.trim(),r.kind,r.domain,r.status,r.priority,r.owner,r.due,r.description,r.url,details,now,now,1,r.sourceId||'').run();return Response.json({id});
 }catch(e){console.error(e);return Response.json({error:'Enregistrement impossible. Votre saisie est conservée.'},{status:503});}}
