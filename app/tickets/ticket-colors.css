@@ -1,0 +1,31 @@
+/* Category and service identities stay legible without depending on color alone. */
+.ticket-category{display:inline-flex!important;align-items:center;gap:6px;width:max-content;max-width:100%;line-height:1.3;white-space:normal;text-align:left;border:1px solid transparent}
+.ticket-category [aria-hidden="true"]{font-size:15px;line-height:1}
+.ticket-category[data-tone="safety"]{background:#fff1e8;color:#9b431b;border-color:#f3d4bf}
+.ticket-category[data-tone="environment"]{background:#eaf7ed;color:#266842;border-color:#bfdfc9}
+.ticket-category[data-tone="production"]{background:#e9f3fc;color:#195b8c;border-color:#c3dcee}
+.ticket-category[data-tone="quality"]{background:#f2edfc;color:#6240a0;border-color:#d9cdf1}
+.ticket-category[data-tone="people"]{background:#fceef4;color:#9b3c68;border-color:#efc9db}
+.ticket-category[data-tone="maintenance"]{background:#fff3e2;color:#8c5d1c;border-color:#eddbb8}
+.ticket-category[data-tone="research"]{background:#edf0ff;color:#415aa1;border-color:#cbd3f4}
+.ticket-category[data-tone="other"]{background:#f0f3f7;color:#53667d;border-color:#d9e1e9}
+.tickets-workspace .hub-filters select[data-tone="safety"],.hub-ticket-dialog select[data-tone="safety"]{border-left:4px solid #d87840}
+.tickets-workspace .hub-filters select[data-tone="environment"],.hub-ticket-dialog select[data-tone="environment"]{border-left:4px solid #48a26a}
+.tickets-workspace .hub-filters select[data-tone="production"],.hub-ticket-dialog select[data-tone="production"]{border-left:4px solid #3183bc}
+.tickets-workspace .hub-filters select[data-tone="quality"],.hub-ticket-dialog select[data-tone="quality"]{border-left:4px solid #8b68ba}
+.tickets-workspace .hub-filters select[data-tone="people"],.hub-ticket-dialog select[data-tone="people"]{border-left:4px solid #bf7095}
+.tickets-workspace .hub-filters select[data-tone="maintenance"],.hub-ticket-dialog select[data-tone="maintenance"]{border-left:4px solid #c38c31}
+.tickets-workspace .hub-filters select[data-tone="research"],.hub-ticket-dialog select[data-tone="research"]{border-left:4px solid #6681c0}
+.tickets-workspace .hub-filters select[data-tone="other"],.hub-ticket-dialog select[data-tone="other"]{border-left:4px solid #8493a4}
+.tickets-workspace .hub-filters select[data-team-family="management"]{border-left:4px solid #8752ae}
+.tickets-workspace .hub-filters select[data-team-family="operations"]{border-left:4px solid #3183bc}
+.tickets-workspace .hub-filters select[data-team-family="support"]{border-left:4px solid #cf843e}
+.hub-ticket-dialog .ticket-team-picker label{gap:7px;min-height:38px;font-size:14px!important;font-weight:550!important}
+.hub-ticket-dialog .ticket-team-picker .ticket-team-emoji{font-size:17px;line-height:1;flex:none}
+.hub-ticket-dialog .ticket-team-picker label[data-team-family="management"]{--team-chip:#8752ae;--team-tint:#f5effa;--team-border:#d9c6e9}
+.hub-ticket-dialog .ticket-team-picker label[data-team-family="operations"]{--team-chip:#1674ad;--team-tint:#edf6fc;--team-border:#bfd9ec}
+.hub-ticket-dialog .ticket-team-picker label[data-team-family="support"]{--team-chip:#b66c2f;--team-tint:#fff6ec;--team-border:#eed5b9}
+.hub-ticket-dialog .ticket-team-picker label:has(input:checked){background:var(--team-tint);color:var(--team-chip);border-color:var(--team-border);box-shadow:inset 0 0 0 1px var(--team-border)}
+.hub-ticket-dialog .ticket-team-picker label:has(input:checked) input{accent-color:var(--team-chip)}
+.hub-ticket-dialog .ticket-team-picker label:hover{border-color:var(--team-border);background:var(--team-tint)}
+.tickets-workspace .hub-ticket-row small{white-space:normal}
