@@ -1,6 +1,15 @@
 /* Category and service identities stay legible without depending on color alone. */
 .ticket-category{display:inline-flex!important;align-items:center;gap:6px;width:max-content;max-width:100%;line-height:1.3;white-space:normal;text-align:left;border:1px solid transparent}
-.ticket-category [aria-hidden="true"]{font-size:15px;line-height:1}
+.ticket-visual-label{display:inline-flex;align-items:center;gap:7px;line-height:1.4;min-width:0}
+.ticket-visual-label svg{flex:none;color:inherit!important;stroke-width:1.8}
+.hub-ticket-row small .ticket-visual-label{margin-right:12px;margin-top:3px;font-size:13px}
+.ticket-visual-select{min-height:44px;height:auto!important;border:1px solid #d8e2ed;border-radius:10px;background:#fbfcfe;font-size:14px;padding:10px 12px;min-width:180px}
+.hub-ticket-dialog .ticket-visual-select{width:100%;margin-top:6px;font-size:15px}
+.ticket-visual-options{border-radius:12px;padding:5px;border-color:#d8e2ed;box-shadow:0 10px 30px #17314f20}
+.ticket-visual-options [data-slot=select-item]{min-height:38px;border-radius:7px;font-size:14px;padding-top:8px;padding-bottom:8px}
+.ticket-visual-label[data-tone=safety]{color:#9b431b}.ticket-visual-label[data-tone=environment]{color:#266842}.ticket-visual-label[data-tone=production]{color:#195b8c}.ticket-visual-label[data-tone=quality]{color:#6240a0}.ticket-visual-label[data-tone=people]{color:#9b3c68}.ticket-visual-label[data-tone=maintenance]{color:#8c5d1c}.ticket-visual-label[data-tone=research]{color:#415aa1}
+.ticket-visual-label[data-team-family=management]{color:#74369a}.ticket-visual-label[data-team-family=operations]{color:#0875bb}.ticket-visual-label[data-team-family=support]{color:#b66c2f}
+@media(max-width:760px){.tickets-workspace .hub-filters .ticket-visual-select{flex:1 1 140px;min-width:0}}
 .ticket-category[data-tone="safety"]{background:#fff1e8;color:#9b431b;border-color:#f3d4bf}
 .ticket-category[data-tone="environment"]{background:#eaf7ed;color:#266842;border-color:#bfdfc9}
 .ticket-category[data-tone="production"]{background:#e9f3fc;color:#195b8c;border-color:#c3dcee}

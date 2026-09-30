@@ -1,10 +1,10 @@
 'use client';
 import {useEffect,useState,type CSSProperties} from 'react';
+import {teamVisual} from '@/lib/ticket-visuals';
 import {LayoutDashboard,FileText,ClipboardList,TriangleAlert,HardHat as EpiIcon,Recycle,Leaf,BookOpen,FileCheck2,Sparkles,HeartPulse,ShieldAlert,LayoutList,Users,BriefcaseBusiness,CalendarDays,FlaskConical,Factory,Truck,HardHat,ShoppingCart,HeartHandshake,Wrench,Monitor,ShieldCheck,Lightbulb,Network} from 'lucide-react';
 export type Team={id:string;name:string;rank:number;parent_id:string|null;revision:number};
 export type BoardLink={id:string;team_id:string;title:string;unit_code:string};
 
-const icons={direction:BriefcaseBusiness,qsse:ShieldCheck,commercial:BriefcaseBusiness,planification:CalendarDays,rd:Lightbulb,production:Factory,laboratoire:FlaskConical,logistique:Truck,'travaux-neufs':HardHat,achats:ShoppingCart,rh:HeartHandshake,procedes:Network,maintenance:Wrench,informatique:Monitor} as const;
 const groups=[
   {name:'Management',ids:['direction','qsse'],accent:'#74369a'},
   {name:'Réalisation',ids:['commercial','planification','rd','production','laboratoire','logistique'],accent:'#0875bb'},
@@ -40,7 +40,7 @@ function theme(id:string):CSSProperties{
 
 export function TeamTree({teams,boards,selected,disabled,onSelect,onTeam}:{teams:Team[];boards:BoardLink[];selected?:string;disabled?:boolean;onSelect?:(id:string)=>void;onTeam?:(team:Team)=>void}){
   function teamNode(t:Team){
-    const Icon=icons[t.id as keyof typeof icons]||Users;
+    const Icon=teamVisual(t.id).Icon;
     const teamBoards=boards.filter(b=>b.team_id===t.id);
     return <div className={'team-node rank-'+t.rank} key={t.id} style={theme(t.id)}>
       <details>
