@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState,type CSSProperties} from 'react';
 import {teamVisual} from '@/lib/ticket-visuals';
-import {LayoutDashboard,FileText,ClipboardList,TriangleAlert,HardHat as EpiIcon,Recycle,Leaf,BookOpen,FileCheck2,Sparkles,HeartPulse,ShieldAlert,LayoutList,Users,BriefcaseBusiness,CalendarDays,FlaskConical,Factory,Truck,HardHat,ShoppingCart,HeartHandshake,Wrench,Monitor,ShieldCheck,Lightbulb,Network} from 'lucide-react';
+import {LayoutDashboard,FileText,ClipboardList,TriangleAlert,HardHat as EpiIcon,Recycle,Leaf,BookOpen,FileCheck2,Sparkles,HeartPulse,ShieldAlert,LayoutList,Users,BriefcaseBusiness,CalendarDays,FlaskConical,Factory,Truck,HardHat,ShoppingCart,HeartHandshake,Wrench,Settings2,Monitor,ShieldCheck,Lightbulb,Network} from 'lucide-react';
 export type Team={id:string;name:string;rank:number;parent_id:string|null;revision:number};
 export type BoardLink={id:string;team_id:string;title:string;unit_code:string};
 
@@ -52,9 +52,10 @@ export function TeamTree({teams,boards,selected,disabled,onSelect,onTeam}:{teams
         </summary>
         <div className="team-boards">
           {t.id==='qsse'&&<div className="qsse-shortcuts">{qsseSections.map(section=><div className="qsse-section" key={section.name}><p>{section.name}</p>{section.links.map(([label,href,LinkIcon])=><a href={href} key={label}><LinkIcon size={15} aria-hidden="true"/><span>{label}</span></a>)}</div>)}</div>}
+          {t.id==='maintenance'&&<div className="qsse-shortcuts"><div className="qsse-section"><p>GMAO</p>{[['Vue d’ensemble','overview',LayoutDashboard],['Demandes & interventions','orders',Wrench],['Équipements','assets',Settings2],['Maintenance préventive','plans',CalendarDays],['Planning','planning',CalendarDays],['Pièces & stocks','parts',ShoppingCart]].map(([label,tab,Icon]:any)=><a href={'/maintenance?tab='+tab} key={tab}><Icon size={15}/><span>{label}</span></a>)}</div></div>}
           {t.id==='qsse'&&teamBoards.length>0&&<p className="qsse-board-label">Tableaux de bord</p>}
           {teamBoards.map(b=>onSelect?<button key={b.id} disabled={disabled} aria-current={selected===b.id?'page':undefined} onClick={()=>onSelect(b.id)}><LayoutDashboard size={14}/><span>{b.title}</span></button>:<a key={b.id} href={'/unites?board='+encodeURIComponent(b.id)}><LayoutDashboard size={14}/><span>{b.title}</span></a>)}
-          {onTeam&&<button disabled={disabled} className="team-open" onClick={()=>onTeam(t)}>Ouvrir {t.rank===1?'la direction':'le service'}</button>}
+          {onTeam&&<button disabled={disabled} className="team-open" onClick={()=>t.id==='maintenance'?location.assign('/maintenance'):onTeam(t)}>Ouvrir {t.rank===1?'la direction':'le service'}</button>}
           {!teamBoards.length&&<small className="team-no-board">Aucun tableau</small>}
         </div>
       </details>

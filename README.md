@@ -374,3 +374,50 @@ conservée dans l’URL. Les réponses de liste obsolètes sont ignorées lorsqu
 change de vue. Les contrôles de modification suivent les droits des équipes
 d’origine ; l’API reste l’autorité. La clôture est guidée par le pilote et les
 sous-actions restantes.
+
+### Maintenance / GMAO
+
+`/maintenance` est l’espace métier du service Maintenance, avec vue d’ensemble,
+interventions, équipements, préventif, planning et pièces détachées. La navigation
+conserve les tableaux personnalisables du service et y affiche les graphiques GMAO.
+Le parc et les stocks démarrent vides : aucun équipement, quantité ou coût fictif.
+
+Une demande peut être déposée par un contributeur pour son service, avec ou sans
+équipement. Elle crée un ticket lié pour les commentaires et fichiers. Un ticket
+existant ouvert peut aussi être converti par la maintenance, sans recopier les
+échanges. Le titre, l’affectation et l’état se pilotent ensuite dans la GMAO ; les
+sous-actions et échanges restent dans le ticket. Mon travail affiche l’intervention
+une seule fois et conserve les sous-actions du ticket.
+
+Parcours : qualification → planification → intervention → contrôle du résultat →
+clôture. La maintenance attribue un technicien habilité, les dates et conditions de
+sécurité. La soumission au contrôle nécessite un compte rendu, un résultat, les
+heures réalisées et tous les points de contrôle terminés. La maintenance ou le
+demandeur peut confirmer la clôture. Un motif est requis pour annuler, clôturer ou
+rouvrir. Les tickets archivés doivent être restaurés avant reprise. Les changements
+et mouvements sont historisés ; les comptes rendus clôturés restent figés.
+
+Les plans préventifs fixent l’équipement, la périodicité hebdomadaire ou mensuelle,
+le technicien et les contrôles. Dans Planning, choisir une période de 62 jours au
+maximum puis « Générer le préventif ». La génération est explicite : il n’y a pas de
+processus automatique en arrière-plan. Une occurrence ne crée qu’une intervention,
+avec ses contrôles copiés et figés. Une fin de mois reste ancrée au jour du premier
+contrôle. Après génération, suspendre le plan et en créer un autre pour changer
+l’équipement ou le calendrier. Les instructions nouvelles s’appliquent aux futures
+interventions uniquement. Une génération est limitée à 200 occurrences par appel.
+
+Le stock initial est constaté à la création d’une référence. Entrées, sorties vers
+une intervention ouverte et corrections d’inventaire sont tracées. Une sortie ne
+peut rendre le stock négatif ; les modifications de référence ne changent pas les
+quantités. Les quantités sont conservées avec six décimales. Le coût unitaire du
+mouvement est conservé au moment de la sortie ; un coût absent reste inconnu.
+La liste signale les quantités inférieures ou égales au seuil.
+
+Les droits suivent les services : lecture du service propriétaire ou Maintenance,
+gestion par les contributeurs Maintenance et administrateurs. Le demandeur conserve
+la lecture de sa demande, même si ses droits de service évoluent. Les écritures
+vérifient les révisions et regroupent la GMAO, le ticket et l’historique en transaction.
+Les notifications sont internes au site, lors de l’affectation et du contrôle/clôture.
+
+Vérification : `node tests/gmao.mjs`, `node tests/quality-actions.mjs`,
+`pnpm exec tsc --noEmit --incremental false`.

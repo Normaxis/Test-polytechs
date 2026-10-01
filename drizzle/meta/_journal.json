@@ -113,6 +113,13 @@
       "when": 1790863946020,
       "tag": "0015_long_swordsman",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1790872842939,
+      "tag": "0016_chubby_the_santerians",
+      "breakpoints": true
     }
   ]
 }

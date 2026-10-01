@@ -1,3 +1,4 @@
+import {gmaoOrders} from '@/lib/gmao-server';
 import {database} from '@/db/raw';
 import {requireRole} from '@/lib/access';
 import {occurrenceDates,todayParis,type Routine} from '@/lib/hub';
@@ -5,7 +6,7 @@ import {qualityActions} from '@/lib/quality-server';
 import {actionTeam,effectiveness} from '@/lib/quality-actions';
 import {accessibleTeams} from '@/lib/team-access';
 
-export type WorkItem={id:string;title:string;source:'Ticket'|'DUERP / PAPRIPACT'|'Fiche QSE'|'Routine'|'Plan consolidé';sourceTitle:string;sourceHref:string;href:string;category:string;teamIds:string[];unitCode:string;pilot:string;pilotId:string;due:string;status:string;closed:boolean;origin:string;updatedAt:string};
+export type WorkItem={id:string;title:string;source:'GMAO'|'Ticket'|'DUERP / PAPRIPACT'|'Fiche QSE'|'Routine'|'Plan consolidé';sourceTitle:string;sourceHref:string;href:string;category:string;teamIds:string[];unitCode:string;pilot:string;pilotId:string;due:string;status:string;closed:boolean;origin:string;updatedAt:string};
 
 export async function GET(req:Request){
   try{
@@ -22,7 +23,8 @@ export async function GET(req:Request){
     ]);
     const names=new Map(users.results.map((u:any)=>[u.id,u.display_name]));
     const items:WorkItem[]=[];
-    for(const row of tickets.results as any[]){const t=JSON.parse(row.data);if(t.archivedAt||t.qualityActionId&&!t.actions?.length)continue;const href='/tickets?id='+encodeURIComponent(row.id);const tasks=Array.isArray(t.actions)&&t.actions.length?t.actions:[null];for(const task of tasks){const pilotId=task?.pilot||t.pilot||'';items.push({id:'ticket:'+row.id+(task?':'+task.id:''),title:task?.title||t.title,source:'Ticket',sourceTitle:t.title,sourceHref:href,href,category:t.category,teamIds:t.teams||[],unitCode:'',pilot:String(names.get(pilotId)||''),pilotId,due:task?.due||t.due||'',status:task?(task.done?'Clôturée':t.status==='Clôturé'?'À vérifier':t.status):t.status,closed:task?!!task.done:t.status==='Clôturé',origin:t.source?'Audit · '+t.source.date:'Ticket',updatedAt:row.updated_at})}}
+    for(const row of tickets.results as any[]){const t=JSON.parse(row.data);if(t.archivedAt||(t.qualityActionId||t.gmaoOrderId)&&!t.actions?.length)continue;const href='/tickets?id='+encodeURIComponent(row.id);const tasks=Array.isArray(t.actions)&&t.actions.length?t.actions:[null];for(const task of tasks){const pilotId=task?.pilot||t.pilot||'';items.push({id:'ticket:'+row.id+(task?':'+task.id:''),title:task?.title||t.title,source:'Ticket',sourceTitle:t.title,sourceHref:href,href,category:t.category,teamIds:t.teams||[],unitCode:'',pilot:String(names.get(pilotId)||''),pilotId,due:task?.due||t.due||'',status:task?(task.done?'Clôturée':t.status==='Clôturé'?'À vérifier':t.status):t.status,closed:task?!!task.done:t.status==='Clôturé',origin:t.source?'Audit · '+t.source.date:'Ticket',updatedAt:row.updated_at})}}
+    for(const r of await gmaoOrders()){const o=r.data,href='/maintenance?order='+encodeURIComponent(r.id);items.push({id:'gmao:'+r.id,title:o.title,source:'GMAO',sourceTitle:o.title,sourceHref:href,href,category:'Maintenance',teamIds:['maintenance',o.teamId],unitCode:'',pilot:String(names.get(o.technicianId)||''),pilotId:o.technicianId,due:o.due,status:o.status,closed:['Clôturée','Annulée'].includes(o.status),origin:o.type,updatedAt:r.updated_at||''})}
     for(const row of evrp.results as any[]){const a=JSON.parse(row.data),href='/duerp?unit='+encodeURIComponent(row.unit_code)+'&tab=actions&action='+encodeURIComponent(row.id);items.push({id:'evrp:'+row.id,title:a.description,source:'DUERP / PAPRIPACT',sourceTitle:a.description,sourceHref:href,href,category:'Sécurité',teamIds:[],unitCode:row.unit_code,pilot:a.owner||'',pilotId:'',due:a.due||'',status:a.status,closed:a.status==='Clôturée',origin:row.risk_id?'Risque DUERP lié':'Mesure de prévention',updatedAt:row.updated_at})}
     for(const row of records.results as any[]){const href='/qse?record='+encodeURIComponent(row.id);items.push({id:'record:'+row.id,title:row.title,source:'Fiche QSE',sourceTitle:row.title,sourceHref:href,href,category:row.domain,teamIds:[],unitCode:'',pilot:row.owner||'',pilotId:'',due:row.due||'',status:row.status,closed:row.status==='Clôturée',origin:row.source_id?'Fiche QSE liée':'Action QSE',updatedAt:row.updated||row.created})}
     const runMap=new Map((runs.results as any[]).map(r=>[r.routine_id+':'+r.date,JSON.parse(r.data)]));
