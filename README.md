@@ -356,3 +356,21 @@ commentaires, avec révision optimiste. Aucun archivage ni effacement automatiqu
 
 Vérification : `node tests/quality-actions.mjs`, `node tests/ged.mjs`,
 `pnpm exec tsc --noEmit --incremental false`.
+
+
+### Ergonomie du suivi
+
+Le plan s’ouvre sur les actions à réaliser. Les compteurs sont limités au service
+sélectionné ; les actions annulées sont exclues du compteur à coter. Le tri par
+urgence place d’abord les retards, puis les priorités et échéances. Une répartition
+colorée permet de filtrer une classe. La fiche expose cinq étapes et conserve les
+champs non affichés : action, cotation, réalisation, efficacité et historique.
+Les pilotes et documents GED se choisissent avec une recherche sans distinction
+d’accents. Les prérequis du contrôle sont visibles avant le visa QSSE.
+
+Les tickets proposent des vues rapides à traiter, en retard, à vérifier et mes
+tickets. Les archives affichent leur date d’archivage, et la vue Archives est
+conservée dans l’URL. Les réponses de liste obsolètes sont ignorées lorsqu’on
+change de vue. Les contrôles de modification suivent les droits des équipes
+d’origine ; l’API reste l’autorité. La clôture est guidée par le pilote et les
+sous-actions restantes.

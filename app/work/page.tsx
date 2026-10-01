@@ -2,13 +2,13 @@
 import {useEffect,useMemo,useState} from 'react';
 import {AccountGate,type Account} from '@/components/account-gate';
 import {ListPagination,useListPage} from '@/components/list-pagination';
-import {HubFrame} from '@/components/hub-layout';
+import {HubFrame,hubRequest} from '@/components/hub-layout';
 import type {WorkItem} from '@/app/api/work/route';
 
 export default function Page(){return <AccountGate>{account=><Work account={account}/>}</AccountGate>}
 function Work({account}:{account:Account}){
   const [items,setItems]=useState<WorkItem[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[view,setView]=useState<'mine'|'all'>('mine'),[status,setStatus]=useState('open'),[query,setQuery]=useState('');
-  async function load(){setLoading(true);try{const r=await fetch('/api/work'),d:any=await r.json();if(!r.ok)throw Error(d.error);setItems(d.items);setError('')}catch(e){setError((e as Error).message)}finally{setLoading(false)}}
+  async function load(){setLoading(true);try{const d=await hubRequest('/api/work');setItems(d.items);setError('')}catch(e){setError((e as Error).message)}finally{setLoading(false)}}
   useEffect(()=>{load()},[]);
   const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Paris',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const mine=(item:WorkItem)=>item.pilotId===account.id||!!item.pilot&&item.pilot.trim().toLocaleLowerCase('fr')===account.displayName.trim().toLocaleLowerCase('fr');
