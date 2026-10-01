@@ -21,7 +21,7 @@ const qsseSections=[
     ['Plans de prévention','/qse#'+encodeURIComponent('Plans de prévention'),ShieldAlert],
   ]},
   {name:'Environnement',links:[
-    ['Gestion des déchets','/qse#'+encodeURIComponent('Gestion des déchets'),Recycle],
+    ['Gestion des déchets','/dechets',Recycle],
     ['Analyse environnementale','/qse#'+encodeURIComponent('Analyse environnementale'),Leaf],
     ['RSE','/qse#RSE',Sparkles],
   ]},

@@ -285,3 +285,20 @@ contre l'écrasement par révisions concurrentes. Tests métier : `node tests/hu
 Le contexte `team` est conservé entre tableaux de bord, tickets, routines et communications. Les liens des cartes ouvrent la fiche concernée ; un nouveau ticket ou une routine peut reprendre le service sélectionné. La navigation mobile se replie et les listes de tickets et de travail sont paginées. L’espace EPI partage la navigation des autres modules et guide le premier inventaire.
 
 Les modifications QSE/EVRP et leurs historiques sont enregistrés dans un même lot transactionnel ; un conflit de révision ne produit pas de nouvelle ligne d’historique. Une action PAPRIPACT exige un pilote et une échéance dès qu’elle quitte « À définir ». Les formulaires DUERP protègent les saisies non enregistrées. `node tests/transactions.mjs` vérifie les handlers sur une base SQLite temporaire, y compris les conflits et les remises EPI.
+
+# Gestion des déchets
+
+Le module `/dechets` remplace l’accès au registre générique des déchets. Les anciens liens QSSE et les fiches existantes ouvrent le nouveau registre ; les autres modules restent inchangés.
+
+- Vue de suivi : masses réelles, recyclage matière, dangerosité déclarée, enlèvements prévus, palettes, graphiques par mois, famille et traitement final. Les graphiques ouvrent un détail chiffré et proposent plusieurs représentations.
+- Registre paginé, recherche sans accents, filtres d’année, famille, dangerosité, statut, dates et périmètre ; export CSV de la sélection avec protection contre les formules.
+- Fiches modifiables par les administrateurs et contributeurs autorisés QSSE, consultation pour les lecteurs autorisés. Historique et contrôle des modifications concurrentes ; source d’origine conservée.
+- Le bilan additionne uniquement les quantités réelles en tonnes ou kilogrammes, pour les lignes enlevées avec une date valide. Les estimations, prévisions, unités et données incertaines restent séparées. Le recyclage matière est distinct de la valorisation énergétique.
+- Les quantités numériques des lignes palettes sont interprétées en unités malgré l’en-tête du fichier. La valeur brute reste consultable et l’unité peut être corrigée. Une masse source exceptionnellement élevée est conservée avec une unité à confirmer, hors bilan tant qu’elle n’est pas vérifiée.
+- Le périmètre Polytechs exclut seulement les lignes explicitement marquées « à retirer des stat » ; le filtre peut afficher toutes les lignes. Les marqueurs « déchets clients » ne suppriment pas automatiquement une ligne du bilan.
+
+Les données du classeur sont une source privée côté serveur (`private/waste-source.json`). Elles ne doivent être ni placées dans `public/`, ni ajoutées au miroir GitHub public. Les nouvelles fiches et corrections sont stockées en D1 (`waste_records`), avec les états précédents dans `waste_history`. Les lignes historiques ne sont pas dupliquées lors d’une republication. L’API renvoie la source brute uniquement pour une fiche demandée et après authentification et contrôle de l’accès QSSE.
+
+`scripts/import-waste-source.py <classeur.xlsx> <sortie.json>` permet de reproduire l’extraction avec `openpyxl` (lecture seule). Ne pas remplacer une source existante sans gérer les identifiants de lignes et les corrections déjà enregistrées. Les références documentaires du classeur ne constituent pas des fichiers joints : les documents restent accessibles via les liens renseignés sur les fiches.
+
+Validation : `node tests/waste.mjs` couvre la séparation des unités, les dates invalides, les estimations, les droits, la source privée, l’historique et les conflits de modification.
