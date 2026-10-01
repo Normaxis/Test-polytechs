@@ -8,7 +8,8 @@ import {teamVisual} from '@/lib/ticket-visuals';
 import {TeamMark} from '@/components/ticket-visuals';
 import {TicketSearchPicker} from '@/components/ticket-search-picker';
 export type Meta={teams:{id:string;name:string;rank:number;parent_id:string|null}[];editableTeams?:string[];users:{id:string;display_name:string}[]};
-export async function hubRequest(path:string,body?:unknown){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:undefined);const d:any=await r.json();if(!r.ok)throw Error(d.error||'Opération indisponible.');return d}
+export {hubRequest} from '@/lib/hub-request';
+import {hubRequest} from '@/lib/hub-request';
 export function useHubMeta(){const [meta,setMeta]=useState<Meta>({teams:[],users:[]}),[error,setError]=useState('');useEffect(()=>{let live=true;hubRequest('/api/hub').then(d=>{if(live)setMeta(d)}).catch(e=>{if(live)setError(e.message)});return()=>{live=false}},[]);return {meta,error}}
 const navigation=[{name:'Dashboard',href:'/unites',Icon:LayoutDashboard},{name:'Mon travail',href:'/work',Icon:ListChecks},{name:'Tickets',href:'/tickets',Icon:Ticket},{name:'Routines',href:'/routines',Icon:CalendarDays},{name:'Communication',href:'/communication',Icon:Megaphone}];
 function subscribeService(onChange:()=>void){window.addEventListener('popstate',onChange);window.addEventListener('polytechs-service',onChange);return()=>{window.removeEventListener('popstate',onChange);window.removeEventListener('polytechs-service',onChange)}}
