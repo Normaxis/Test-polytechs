@@ -26,7 +26,7 @@ const qsseSections=[
     ['RSE','/qse#RSE',Sparkles],
   ]},
   {name:'Qualité',links:[
-    ['Gestion documentaire','/qse#'+encodeURIComponent('Gestion documentaire'),BookOpen],
+    ['Gestion documentaire','/ged',BookOpen],
     ['Réglementation','/qse#'+encodeURIComponent('Réglementation'),FileCheck2],
     ['Amélioration continue','/qse#'+encodeURIComponent('Amélioration continue'),LayoutList],
   ]},
