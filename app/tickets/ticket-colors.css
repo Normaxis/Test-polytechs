@@ -40,11 +40,8 @@
 .tickets-workspace .hub-ticket-row small{white-space:normal}
 .ticket-search-picker{display:grid;gap:7px;min-width:0}
 .ticket-search-picker>small{font-size:12px;color:#738398;line-height:1.5}
-.ticket-search-chips{padding:9px!important;gap:7px;border-color:#d8e2ed;background:#fbfcfe;border-radius:10px;min-height:48px}
-.ticket-search-chips [data-slot=combobox-chip]{height:auto;min-height:32px;padding:5px 7px;border-radius:7px;background:#eef3f8;font-size:14px;max-width:100%;white-space:normal}
-.ticket-search-chips [data-slot=combobox-chip][data-team-family=management]{background:#f5effa}
-.ticket-search-chips [data-slot=combobox-chip][data-team-family=operations]{background:#edf6fc}
-.ticket-search-chips [data-slot=combobox-chip][data-team-family=support]{background:#fff6ec}
+.ticket-search-chips{padding:9px!important;gap:7px 14px;border-color:#d8e2ed;background:#fff;border-radius:10px;min-height:48px}
+.ticket-search-chips [data-slot=combobox-chip]{height:auto;min-height:32px;padding:3px 0;border-radius:0;background:transparent;font-size:14px;max-width:100%;white-space:normal}
 .hub-ticket-dialog .hub-ticket-form .ticket-search-chips input{flex:1 1 150px;width:auto;border:0!important;background:transparent!important;box-shadow:none!important;min-height:32px;margin:0;padding:4px 7px;font-size:14px}
 .ticket-search-chips [data-slot=combobox-chip-remove]{width:28px;height:28px;opacity:.7;flex:none}
 .ticket-search-results{pointer-events:auto;border-radius:12px;background:#fff;border:1px solid #d8e2ed;box-shadow:0 10px 30px #17314f20}
