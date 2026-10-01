@@ -320,3 +320,39 @@ L’approbation déplace atomiquement le pointeur de version applicable ; la ver
 Stockage D1 : `ged_documents`, `ged_versions`, `ged_profiles`, `ged_events`, `ged_files`. Fichiers R2 : `ged/<version>/<fichier>`. Les opérations protègent les révisions concurrentes, enregistrent les décisions et actualisent la version applicable dans le même lot transactionnel. Les ajouts de fichiers utilisent un contrôle de révision après écriture R2 et retirent le fichier si la transaction ne l’a pas rattaché.
 
 Validation : `node tests/ged.mjs` couvre un cycle complet avec correction, la séparation des rôles, la hiérarchie N+1, les fichiers privés et figés, les conflits de révision, l’historique et le maintien de la version applicable. `scripts/import-ged-source.py <classeur.xlsx> <sortie.json>` reproduit l’extraction en lecture seule.
+
+
+## Plan d’actions consolidé et archivage
+
+`/plan-actions` reprend les 628 lignes du plan P22 indice D fourni. Le snapshot
+`private/quality-actions-source.json` reste exclusivement côté serveur, hors miroir
+GitHub public. `scripts/import-quality-actions.py <source.xlsx> <snapshot.json>`
+permet de reconstruire la source privée sans modifier le classeur. Les originaux,
+cotations historiques, remarques et dates de consolidation restent consultables.
+Les modifications sont conservées dans D1 avec révision optimiste et historique.
+
+La priorité est calculée avec G × E (P1 ≥16, P2 ≥8, P3 ≥4). L’échéance proposée
+n’est pas une décision COPIL. Les ressources suivent le maximum des lectures heures
+et euros. La réalisation et l’efficacité sont distinctes : seule une vérification
+QSSE avec critère, preuve et cotation avant/après établit le résultat. Changer
+l’action, le résultat, la cotation ou le statut annule la vérification précédente.
+Une action non efficace peut donner lieu à une nouvelle action liée à son origine.
+Les comptes des pilotes doivent être associés explicitement : les noms Excel ne
+créent ni comptes ni affectations automatiques. Les services sources restent intacts ;
+l’équipe du site peut être ajustée (Finances est initialement rattaché à Direction,
+Assurance Qualité à QSSE, Planification & Logistique à Planification).
+
+Un ticket lié est créé à la demande avec un identifiant déterministe et un lien
+réciproque. Ses affectations et échanges se gèrent dans le ticket ; son archivage
+ne supprime ni ne clôture l’action source. Mon travail évite de compter une seconde
+fois le dossier principal, mais conserve les sous-actions ajoutées au ticket.
+La fiche GED peut être sélectionnée via recherche et ouverte depuis le plan.
+
+Les tickets clôturés peuvent être archivés et restaurés par un contributeur
+autorisé sur les équipes du ticket. Les archives conservent les commentaires et
+fichiers et restent lisibles avec les mêmes droits. Elles sont figées jusqu’à
+restauration. Archivage et restauration sont tracés comme événements dans les
+commentaires, avec révision optimiste. Aucun archivage ni effacement automatique.
+
+Vérification : `node tests/quality-actions.mjs`, `node tests/ged.mjs`,
+`pnpm exec tsc --noEmit --incremental false`.

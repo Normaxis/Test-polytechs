@@ -28,6 +28,7 @@ const qsseSections=[
   {name:'Qualité',links:[
     ['Gestion documentaire','/ged',BookOpen],
     ['Réglementation','/qse#'+encodeURIComponent('Réglementation'),FileCheck2],
+    ['Plan d’actions','/plan-actions',ClipboardList],
     ['Amélioration continue','/qse#'+encodeURIComponent('Amélioration continue'),LayoutList],
   ]},
 ] as const;

@@ -1,7 +1,7 @@
 export const categories=['Sécurité','Environnement','Production','Qualité','Ressources humaines','Maintenance','R&D','Autre'];
 export const ticketStatuses=['Ouvert','En cours','À vérifier','Clôturé'];
 export type Task={id:string;title:string;done:boolean;pilot:string;due:string};
-export type Ticket={title:string;category:string;description:string;teams:string[];pilot:string;due:string;status:string;actions:Task[];responsibles:string[];source?:{routineId:string;date:string}};
+export type Ticket={archivedAt?:string;archivedBy?:string;qualityActionId?:string;title:string;category:string;description:string;teams:string[];pilot:string;due:string;status:string;actions:Task[];responsibles:string[];source?:{routineId:string;date:string}};
 export type Routine={title:string;description:string;teams:string[];pilot:string;start:string;time:string;repeat:'none'|'daily'|'weekly'|'monthly';interval:number;end:string;questions:{id:string;label:string}[];active:boolean};
 export type Communication={title:string;body:string;sourceTeam:string;teams:string[]};
 export type Row<T>={id:string;data:T;revision:number;created_at?:string;updated_at?:string;author?:string};
