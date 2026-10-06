@@ -14,9 +14,11 @@ function compile(name,source){fs.writeFileSync(path.join(dir,name+'.mjs'),ts.tra
 try{
   fs.writeFileSync(path.join(dir,'raw.mjs'),'export const database=()=>globalThis.auditDatabase;export const bucket=()=>{throw Error("Unexpected storage access")};');
   fs.writeFileSync(path.join(dir,'access.mjs'),'export const checkOrigin=()=>true;export const requireRole=async()=>({user:{id:"tester",displayName:"QSSE",role:"admin"}});');
+  fs.writeFileSync(path.join(dir,'teams.mjs'),'export const teamsAllowed=async()=>true;export const accessibleTeams=async()=>new Set(["qsse"]);');
+  compile('record-access',fs.readFileSync('lib/record-access.ts','utf8').replaceAll("'@/db/raw'","'./raw.mjs'").replaceAll("'./team-access'","'./teams.mjs'"));
   fs.writeFileSync(path.join(dir,'source.mjs'),'export const evrpSource=null;');
   for(const name of ['modules','workflows','evrp','navigation'])compile(name,fs.readFileSync('lib/'+name+'.ts','utf8').replaceAll("'./modules'","'./modules.mjs'"));
-  for(const name of ['records','evrp']){let source=fs.readFileSync('app/api/'+name+'/route.ts','utf8');for(const [from,to] of [['@/db/raw','./raw.mjs'],['@/lib/access','./access.mjs'],['@/lib/workflows','./workflows.mjs'],['@/lib/evrp','./evrp.mjs'],['@/lib/evrp-private-source','./source.mjs']])source=source.replaceAll("'"+from+"'","'"+to+"'");compile(name+'-route',source)}
+  for(const name of ['records','evrp']){let source=fs.readFileSync('app/api/'+name+'/route.ts','utf8');for(const [from,to] of [['@/lib/record-access','./record-access.mjs'],['@/lib/team-access','./teams.mjs'],['@/db/raw','./raw.mjs'],['@/lib/access','./access.mjs'],['@/lib/workflows','./workflows.mjs'],['@/lib/evrp','./evrp.mjs'],['@/lib/evrp-private-source','./source.mjs']])source=source.replaceAll("'"+from+"'","'"+to+"'");compile(name+'-route',source)}
   sqlite.exec(`CREATE TABLE records(id TEXT PRIMARY KEY,title TEXT,kind TEXT,domain TEXT,status TEXT,priority TEXT,owner TEXT,due TEXT,description TEXT,url TEXT,details TEXT,created TEXT,updated TEXT,revision INTEGER,source_id TEXT);
 CREATE TABLE record_history(id TEXT,record_id TEXT,revision INTEGER,snapshot TEXT,saved_at TEXT);
 CREATE TABLE epi_products(code TEXT PRIMARY KEY,quantity INTEGER,revision INTEGER,catalog_status TEXT,updated_at TEXT);
