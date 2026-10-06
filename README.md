@@ -421,3 +421,90 @@ Les notifications sont internes au site, lors de l’affectation et du contrôle
 
 Vérification : `node tests/gmao.mjs`, `node tests/quality-actions.mjs`,
 `pnpm exec tsc --noEmit --incremental false`.
+
+
+## Système de Management Intégré (SMI)
+
+La page `/smi` est accessible depuis la navigation principale. Elle présente les
+chapitres 4 à 10 sous forme de colonnes défilantes sur ordinateur et tablette,
+et de sections verticales sur téléphone (seuil de 700 px). Les filtres et la
+recherche sont locaux et immédiats ; la GED est relue au retour sur la page et
+chaque minute, hors saisie en cours.
+
+### Référentiels et interprétation
+
+Le jeu initial contient 72 entrées de suivi distinctes par norme, regroupées par
+thèmes : ISO 9001:2026, ISO 14001:2026 et ISO 45001:2018 + Amd 1:2024. Les intitulés
+et points d’attention sont des paraphrases de pilotage. Ce n’est pas une
+reproduction exhaustive des paragraphes normatifs : Polytechs doit compléter
+les regroupements au niveau de détail souhaité à partir de ses exemplaires ISO.
+Les éditions 2026 utilisent 10.1 pour l’amélioration continue et 10.2 pour les
+non-conformités/actions correctives ; ISO 45001 conserve aussi 10.3.
+Sources officielles : <https://www.iso.org/fr/standard/9001>,
+<https://www.iso.org/fr/standard/14001>,
+<https://www.iso.org/fr/standard/88428.html>.
+
+Les exemples désignent des preuves possibles, jamais des titres de documents
+prétendument imposés par une norme. Q/E/S proviennent des référentiels en base ;
+C est dérivé de plusieurs normes applicables. Un administrateur peut ajouter,
+modifier ou suspendre les référentiels et exigences. Une même clé de thème
+regroupe des clauses distinctes sans confondre leurs codes par norme.
+
+### GED unique et droits
+
+`smi_standards`, `smi_requirements`, `smi_document_links`, `smi_evidence_links` et
+`smi_events` portent uniquement la cartographie, ses relations et sa traçabilité.
+Les documents, fichiers, versions et acteurs restent ceux de la GED existante.
+La création depuis SMI enregistre le brouillon GED et toutes ses relations dans
+une transaction unique. Aucun fichier ni document n’est copié pour chaque norme.
+Le circuit auteur → relecteur QSSE → approbateur N+1 reste obligatoire pour
+publier une version. La prochaine révision fait partie de la fiche GED ; son
+suivi et l’archivage sont historisés dans la GED.
+
+Les propositions calculées sur les titres existants ne sont pas des preuves
+confirmées : elles doivent être validées par le service pilote ou QSSE. Un lien
+retiré reste marqué comme tel pour empêcher sa recréation automatique ; on peut
+le rétablir avec le contrôle de révision. Les lecteurs ne peuvent modifier aucun
+élément. Les documents et exports respectent les accès par service et les
+participants au circuit GED. Les liens d’audit, écarts et actions sont gérés par
+QSSE, à partir des éléments existants que l’utilisateur peut consulter. Un ticket
+peut être retenu comme écart ou action selon sa nature ; une routine programmée
+n’est pas présentée comme un audit déjà réalisé.
+
+### Couverture documentaire
+
+Pour une exigence, chaque preuve liée et confirmée vaut 1 si elle possède une
+version GED approuvée avec fichier, sans brouillon ouvert ni révision dépassée ;
+0,5 si elle est en révision ; 0 si elle est à créer ou archivée. Un rattachement
+non confirmé vaut 0. La couverture est la moyenne de ces valeurs, arrondie à
+l’entier inférieur ; aucune preuve donne 0. Les chapitres et référentiels font la
+moyenne des exigences correspondantes. Les filtres documentaires ne retirent
+pas les preuves défavorables du dénominateur. Les résultats sont limités au
+périmètre documentaire accessible à l’utilisateur. « Couvertes » ne signifie
+pas conformité certifiée ni efficacité vérifiée en audit.
+
+### Export et évolution
+
+`GET /api/smi/export` produit un vrai classeur XLSX, avec la matrice filtrée et
+une feuille expliquant les règles et référentiels. Les textes sont des cellules
+littérales (aucune formule injectée). `exportMatrix` dans `lib/smi.ts` sépare les
+données de la génération XLSX pour accueillir ultérieurement un export PDF.
+
+### Migration et vérifications
+
+La migration additive `drizzle/0017_last_jocasta.sql` crée cinq tables et les
+référentiels initiaux, sans réécriture des données métiers existantes.
+`scripts/rollback-smi.sql` est un retour arrière manuel, exclu des migrations
+automatiques : sauvegarder les tables SMI, revenir à une version applicative
+compatible, puis supprimer uniquement ces tables. Les documents créés depuis
+SMI restent dans la GED. Pour réinstaller après ce retour arrière, restaurer la
+sauvegarde ou réappliquer explicitement la migration selon le journal de
+migration de l’environnement, sans réinitialiser la base.
+
+Vérifications : `node tests/smi.mjs`, `node tests/ged.mjs` et
+`node node_modules/typescript/bin/tsc --noEmit --incremental false`, puis le build
+Sites. Les tests SMI exercent les routes réelles sur SQLite avec les règles
+réelles d’accès par service et vérifient aussi le classeur via `openpyxl`.
+Le rendu navigateur et les interactions tactiles doivent encore être contrôlés
+sur les appareils cibles : le contrôle navigateur n’était pas disponible dans
+l’environnement de réalisation.

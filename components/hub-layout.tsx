@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useState,useSyncExternalStore,type ReactNode} from 'react';
-import {Bell,LayoutDashboard,Ticket,CalendarDays,Megaphone,ListChecks} from 'lucide-react';
+import {Bell,LayoutDashboard,Ticket,CalendarDays,Megaphone,ListChecks,Layers} from 'lucide-react';
 import {TeamTree,type Team,type BoardLink} from '@/components/team-navigation';
 import {ServiceSidebar} from '@/components/service-sidebar';
 import {serviceHref} from '@/lib/navigation';
@@ -11,7 +11,7 @@ export type Meta={teams:{id:string;name:string;rank:number;parent_id:string|null
 export {hubRequest} from '@/lib/hub-request';
 import {hubRequest} from '@/lib/hub-request';
 export function useHubMeta(){const [meta,setMeta]=useState<Meta>({teams:[],users:[]}),[error,setError]=useState('');useEffect(()=>{let live=true;hubRequest('/api/hub').then(d=>{if(live)setMeta(d)}).catch(e=>{if(live)setError(e.message)});return()=>{live=false}},[]);return {meta,error}}
-const navigation=[{name:'Dashboard',href:'/unites',Icon:LayoutDashboard},{name:'Mon travail',href:'/work',Icon:ListChecks},{name:'Tickets',href:'/tickets',Icon:Ticket},{name:'Routines',href:'/routines',Icon:CalendarDays},{name:'Communication',href:'/communication',Icon:Megaphone}];
+const navigation=[{name:'SMI',href:'/smi',Icon:Layers},{name:'Dashboard',href:'/unites',Icon:LayoutDashboard},{name:'Mon travail',href:'/work',Icon:ListChecks},{name:'Tickets',href:'/tickets',Icon:Ticket},{name:'Routines',href:'/routines',Icon:CalendarDays},{name:'Communication',href:'/communication',Icon:Megaphone}];
 function subscribeService(onChange:()=>void){window.addEventListener('popstate',onChange);window.addEventListener('polytechs-service',onChange);return()=>{window.removeEventListener('popstate',onChange);window.removeEventListener('polytechs-service',onChange)}}
 export function useServiceFilter():[string,(value:string)=>void]{const team=useSyncExternalStore(subscribeService,()=>new URLSearchParams(location.search).get('team')||'',()=>'');return [team,value=>{history.replaceState(null,'',serviceHref(location.pathname+location.search,value));window.dispatchEvent(new Event('polytechs-service'))}]}
 type Notification={id:string;title:string;href:string;seen:number;created_at:string};
