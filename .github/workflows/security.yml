@@ -19,6 +19,14 @@ jobs:
           node-version: '24'
       - run: npm install --global pnpm@11.25.0
       - run: pnpm install --frozen-lockfile
+      - name: Prepare isolated CI hosting configuration
+        # Production Site metadata is intentionally absent from the public mirror.
+        # Only binding names are needed for type checking; no production identifier.
+        run: |
+          mkdir -p .openai
+          if [ ! -f .openai/hosting.json ]; then
+            printf '%s\n' '{"d1":"DB","r2":"BUCKET"}' > .openai/hosting.json
+          fi
       - run: pnpm exec tsc --noEmit --incremental false
       - name: Application and security regression tests
         run: |
