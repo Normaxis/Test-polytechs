@@ -45,6 +45,11 @@ assert.equal((await (await hub.GET(new Request('https://example.test/api?scope=t
 assert.equal((await post(hub,{action:'comment',ticketId:t.id,body:'Commentaire',recipients:[]})).status,403);assert.equal((await post(hub,{action:'ticket',id:t.id,revision:t.revision,data:td})).status,403);
 const form=new FormData();form.set('ticketId',t.id);form.set('file',new File(['%PDF-test'],'test.pdf'));assert.equal((await fileRoute.POST(new Request('https://example.test/api',{method:'POST',body:form}))).status,403);assert.equal(files.size,0);
 assert.equal((await post(hub,{action:'archive-ticket',id:t.id,revision:t.revision,archive:false})).status,200);assert.equal((await (await hub.GET(new Request('https://example.test/api?scope=tickets'))).json()).rows.length,1);assert.equal(db.prepare('SELECT count(*) n FROM hub_comments WHERE ticket_id=?').get(t.id).n,2);
+// Optional integrity check for the private import; all API tests above use synthetic fixtures.
+if(fs.existsSync('private/quality-actions-source.json')){
 const src=JSON.parse(fs.readFileSync('private/quality-actions-source.json','utf8'));assert.equal(src.records.length,628);assert.equal(new Set(src.records.map(a=>a.id)).size,628);assert.equal(src.records.filter(a=>lib.priority(a.gravity,a.exposure)==='A COTER').length,443);assert.equal(src.records.filter(a=>a.status==='ANNULEE').length,99);
-console.log('Plan : 628 actions, cotation, moyens, droits, efficacité QSSE, historique et tickets sans doublons vérifiés. Archivage : clôture requise, accès, conservation et restauration vérifiés.');
+console.log('Import privé : 628 actions, identifiants et répartitions vérifiés.');
+}else console.log('Import privé absent : contrôle du catalogue réservé à son environnement propriétaire.');
+
+console.log('Plan : cotation, moyens, droits, efficacité QSSE, historique et tickets sans doublons vérifiés. Archivage : clôture requise, accès, conservation et restauration vérifiés.');
 }finally{db.close();fs.rmSync(dir,{recursive:true,force:true})}
