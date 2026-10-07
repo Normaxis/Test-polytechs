@@ -28,6 +28,11 @@ jobs:
             printf '%s\n' '{"d1":"DB","r2":"BUCKET"}' > .openai/hosting.json
           fi
       - run: pnpm exec tsc --noEmit --incremental false
+      - name: Install Excel export test dependencies
+        run: |
+          python -m venv "$RUNNER_TEMP/qse-test-python"
+          "$RUNNER_TEMP/qse-test-python/bin/python" -m pip install openpyxl==3.1.5 et-xmlfile==2.0.0
+          echo "$RUNNER_TEMP/qse-test-python/bin" >> "$GITHUB_PATH"
       - name: Application and security regression tests
         run: |
           for test in tests/*.mjs; do node "$test"; done
