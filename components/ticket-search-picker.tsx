@@ -3,7 +3,7 @@ import {useId,useState} from 'react';
 import {Users} from 'lucide-react';
 import {TeamMark} from '@/components/ticket-visuals';
 import {teamVisual} from '@/lib/ticket-visuals';
-import {Combobox,ComboboxValue,ComboboxChips,ComboboxChip,ComboboxChipsInput,ComboboxContent,ComboboxList,ComboboxItem,ComboboxEmpty,useComboboxAnchor} from '@/components/ui/combobox';
+import {Combobox,ComboboxInput,ComboboxValue,ComboboxChips,ComboboxChip,ComboboxChipsInput,ComboboxContent,ComboboxList,ComboboxItem,ComboboxEmpty,useComboboxAnchor} from '@/components/ui/combobox';
 type Option={id:string;name:string};
 function normalize(text:string){return text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').trim()}
 export function TicketSearchPicker({options,value,onChange,disabled=false,label,kind='team',compact=false}:{options:Option[];value:string[];onChange:(ids:string[])=>void;disabled?:boolean;label:string;kind?:'team'|'person';compact?:boolean}){
@@ -14,4 +14,12 @@ export function TicketSearchPicker({options,value,onChange,disabled=false,label,
     <ComboboxChips ref={anchor} className="ticket-search-chips"><ComboboxValue>{(items:Option[])=>items.map(o=><ComboboxChip key={o.id} showRemove={!disabled} data-team-family={kind==='team'?teamVisual(o.id).family:undefined}>{mark(o)}</ComboboxChip>)}</ComboboxValue>{compact&&disabled&&!value.length&&<span className="ticket-picker-empty">{kind==='team'?'Aucun service attribué':'Aucun responsable supplémentaire'}</span>}<ComboboxChipsInput id={id} aria-label={label} placeholder={kind==='team'?'Rechercher un service…':'Rechercher une personne…'} disabled={disabled}/></ComboboxChips>
     <ComboboxContent anchor={anchor} className="ticket-search-results"><ComboboxEmpty>Aucun résultat pour cette recherche.</ComboboxEmpty><ComboboxList>{(o:Option)=><ComboboxItem key={o.id} value={o}>{mark(o)}</ComboboxItem>}</ComboboxList></ComboboxContent>
   </Combobox>{!compact&&<small>{value.length} {kind==='team'?'équipe(s) sélectionnée(s)':'responsable(s) sélectionné(s)'}</small>}</div>;
+}
+
+export function TicketPilotPicker({options,value,onChange,disabled=false,label,className=''}:{options:Option[];value:string;onChange:(id:string)=>void;disabled?:boolean;label:string;className?:string}){
+  const selected=options.find(o=>o.id===value)||(value?{id:value,name:value}:null);
+  return <div className={'ticket-pilot-picker '+className}><Combobox items={options} value={selected} onValueChange={o=>onChange(o?.id||'')} itemToStringLabel={o=>o.name} isItemEqualToValue={(a,b)=>a.id===b.id} filter={(o,q)=>normalize(o.name).includes(normalize(q))} disabled={disabled}>
+    <ComboboxInput aria-label={label} placeholder="Rechercher un pilote…" showClear={!!value} disabled={disabled}/>
+    <ComboboxContent className="ticket-search-results"><ComboboxEmpty>Aucun pilote trouvé.</ComboboxEmpty><ComboboxList>{(o:Option)=><ComboboxItem key={o.id} value={o}>{o.name}</ComboboxItem>}</ComboboxList></ComboboxContent>
+  </Combobox></div>;
 }
