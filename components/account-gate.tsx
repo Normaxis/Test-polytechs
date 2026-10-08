@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {TeamAccessPanel} from '@/components/team-access-panel';
+import {ProfileProvider} from '@/components/profile';
 export type Account={id:string;username:string;displayName:string;role:'admin'|'editor'|'reader';mustChangePassword:boolean};
 async function auth(body:Record<string,string>){const res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data:any=await res.json();if(!res.ok)throw Error(data.error||'Connexion impossible.');return data}
 export function AccountGate({children}:{children:(account:Account,logout:()=>void)=>React.ReactNode}){const [account,setAccount]=useState<Account|null>(null),[ready,setReady]=useState(false),[error,setError]=useState(''),[username,setUsername]=useState(''),[password,setPassword]=useState(''),[newPassword,setNewPassword]=useState(''),[busy,setBusy]=useState(false);
@@ -8,7 +9,7 @@ useEffect(()=>{fetch('/api/auth').then(async r=>{const d:any=await r.json();if(!
 async function submit(e:React.FormEvent){e.preventDefault();setError('');setBusy(true);try{const data=account?.mustChangePassword?await auth({action:'password',oldPassword:password,newPassword}):await auth({action:'login',username,password});setAccount(data.account);setPassword('');setNewPassword('')}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
 async function logout(){try{await auth({action:'logout'})}finally{setAccount(null);setPassword('');setNewPassword('')}}
 if(!ready)return <div className="login-page"><p role="status">Ouverture de l’espace QSE…</p></div>;
-if(account&&!account.mustChangePassword)return <>{children(account,logout)}</>;
+if(account&&!account.mustChangePassword)return <ProfileProvider account={account} logout={logout}>{children(account,logout)}</ProfileProvider>;
 return <main className="login-page"><section className="login-card"><img src="/polytechs-logo.png" width="180" height="100" alt="Polytechs"/><span className="brand-sub">ESPACE QSE</span><h1>{account?'Sécuriser votre compte':'Connexion'}</h1><p>{account?'Choisissez un nouveau mot de passe avant d’accéder aux fiches QSE.':'Saisissez votre identifiant et votre mot de passe pour accéder aux registres.'}</p><form onSubmit={submit}>{!account&&<label>Identifiant<input autoComplete="username" value={username} onChange={e=>setUsername(e.target.value)} required autoFocus/></label>}<label>{account?'Mot de passe actuel':'Mot de passe'}<input type="password" autoComplete={account?'current-password':'current-password'} value={password} onChange={e=>setPassword(e.target.value)} required/></label>{account&&<label>Nouveau mot de passe <small>(12 caractères minimum)</small><input type="password" autoComplete="new-password" minLength={12} value={newPassword} onChange={e=>setNewPassword(e.target.value)} required/></label>}{error&&<p role="alert" className="error">{error}</p>}<button className="primary" disabled={busy}>{busy?'Veuillez patienter…':account?'Enregistrer le mot de passe':'Se connecter'}</button></form>{account&&<button className="text-link" onClick={logout}>Changer de compte</button>}</section></main>}
 
 const labels={admin:'Administrateur · accès complet',editor:'Contributeur · lecture et modification',reader:'Lecteur · consultation'};

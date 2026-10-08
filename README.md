@@ -508,3 +508,12 @@ réelles d’accès par service et vérifient aussi le classeur via `openpyxl`.
 Le rendu navigateur et les interactions tactiles doivent encore être contrôlés
 sur les appareils cibles : le contrôle navigateur n’était pas disponible dans
 l’environnement de réalisation.
+# Profil utilisateur et préférences de langue
+
+La photo à droite des notifications ouvre une fenêtre compacte avec le nom, l’identifiant, le changement/suppression de photo et la langue du site. Les comptes lecteurs peuvent modifier leur propre profil. Les langues disponibles sont français (valeur initiale), anglais, allemand, italien et espagnol. Le choix est enregistré dans D1 et rechargé à la connexion ; il n’est pas partagé entre les utilisateurs.
+
+`user_profiles` (migration additive 0019) référence les comptes existants. Les photos sont stockées dans R2 et servies par une route authentifiée sans cache partagé. Le client cadre et réduit les images à 512 × 512 pixels avant envoi. Le serveur vérifie le format, l’origine, l’utilisateur et une limite de 2 Mo sur le flux. Remplacer ou supprimer une photo conserve la préférence de langue.
+
+Le catalogue `lib/interface-locale.ts` traduit les libellés communs, la navigation, le profil et les contrôles principaux. Il doit encore être complété pour tous les textes métier détaillés et les messages des modules. Aucun contenu n’est envoyé à un service de traduction. Les saisies et documents restent stockés dans leur langue d’origine. `data-no-translate` protège les textes qui doivent conserver leur affichage d’origine. La langue HTML suit le choix du compte. Les nouvelles traductions doivent être ajoutées dans les cinq langues.
+
+Vérification : `node tests/profile.mjs` teste les préférences des cinq langues, leur isolation par compte, la lecture privée des photos, les limites d’import, le remplacement et la suppression. `pnpm test:security` couvre l’authentification et les droits existants. Le retrait de cette fonctionnalité demande d’abord de revenir au code précédent ; la table `user_profiles` peut ensuite être conservée pour éviter toute perte de préférences, ou supprimée explicitement après sauvegarde. Les autres tables ne sont pas modifiées.

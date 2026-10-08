@@ -25,6 +25,7 @@ export const records = sqliteTable('records', {id:text('id').primaryKey(),title:
 export const history=sqliteTable('record_history',{id:text('id').primaryKey(),recordId:text('record_id').notNull(),revision:integer('revision').notNull(),snapshot:text('snapshot').notNull(),savedAt:text('saved_at').notNull()},t=>[index('idx_history_record').on(t.recordId)]);
 
 export const users=sqliteTable('users',{id:text('id').primaryKey(),username:text('username').notNull().unique(),displayName:text('display_name').notNull(),role:text('role').notNull(),passwordHash:text('password_hash').notNull(),mustChangePassword:integer('must_change_password').notNull().default(1),createdAt:text('created_at').notNull()});
+export const userProfiles=sqliteTable('user_profiles',{userId:text('user_id').primaryKey().references(()=>users.id),locale:text('locale').notNull().default('fr'),photoKey:text('photo_key').notNull().default(''),photoMime:text('photo_mime').notNull().default(''),photoUpdatedAt:text('photo_updated_at').notNull().default('')});
 export const sessions=sqliteTable('sessions',{tokenHash:text('token_hash').primaryKey(),userId:text('user_id').notNull().references(()=>users.id),expiresAt:integer('expires_at').notNull()},t=>[index('idx_sessions_user').on(t.userId)]);
 export const loginAttempts=sqliteTable('login_attempts',{username:text('username').primaryKey(),failures:integer('failures').notNull(),blockedUntil:integer('blocked_until').notNull()});
 
