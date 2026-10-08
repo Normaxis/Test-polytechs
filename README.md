@@ -517,3 +517,16 @@ La photo à droite des notifications ouvre une fenêtre compacte avec le nom, l�
 Le catalogue `lib/interface-locale.ts` traduit les libellés communs, la navigation, le profil et les contrôles principaux. Il doit encore être complété pour tous les textes métier détaillés et les messages des modules. Aucun contenu n’est envoyé à un service de traduction. Les saisies et documents restent stockés dans leur langue d’origine. `data-no-translate` protège les textes qui doivent conserver leur affichage d’origine. La langue HTML suit le choix du compte. Les nouvelles traductions doivent être ajoutées dans les cinq langues.
 
 Vérification : `node tests/profile.mjs` teste les préférences des cinq langues, leur isolation par compte, la lecture privée des photos, les limites d’import, le remplacement et la suppression. `pnpm test:security` couvre l’authentification et les droits existants. Le retrait de cette fonctionnalité demande d’abord de revenir au code précédent ; la table `user_profiles` peut ensuite être conservée pour éviter toute perte de préférences, ou supprimée explicitement après sauvegarde. Les autres tables ne sont pas modifiées.
+
+
+### Confidentialité et droits des services
+
+Les services sans configuration d’accès explicite sont restreints par défaut. Le service `rh` est toujours restreint : seuls les membres désignés et les administrateurs y accèdent, même si son ancienne configuration le déclarait ouvert. Une équipe explicitement ouverte reste accessible aux comptes connectés, sauf RH.
+
+Les contenus RH rattachés à plusieurs services nécessitent l’habilitation RH. Ce contrôle s’applique aux tickets, pièces jointes, commentaires, routines, communications, statistiques, agrégats, notifications, dashboards, GED et SMI/export. Les contenus GED RH nécessitent aussi cette habilitation pour les anciens auteurs, relecteurs et approbateurs : une affectation documentaire ancienne ne contourne pas un retrait de droits. La modification RH exige la contribution RH et le rôle global approprié. Les tickets/routines non classés sont réservés aux administrateurs.
+
+L’administration des droits reste réservée aux administrateurs et ses modifications sont tracées dans `security_events`. Les retraits de membres sont appliqués à la requête suivante, sans attendre la fin de session. Aucun document ni compte n’est supprimé ; aucune migration n’est nécessaire. Un retour au commit précédent rétablit les anciennes règles sans modifier les données.
+
+Les administrateurs conservent tous les droits : ce rôle doit être attribué uniquement aux personnes habilitées. Classer les dossiers RH dans le service RH / processus GED S3 (ou périmètre I) est nécessaire ; l’application ne devine pas la sensibilité d’un texte placé dans un service public. Les droits SharePoint/Power BI des contenus intégrés restent gérés par ces services externes. Les tests locaux ne constituent pas une attestation de sécurité absolue ni un test d’intrusion en production.
+
+Vérifications : `tests/security.mjs` (droits administrateur, dashboards, retrait immédiat, agrégats), `tests/gmao.mjs` (tickets RH multiservices, fichiers, notifications, statistiques), `tests/smi.mjs` (catalogue GED, accès direct, anciens participants, fichiers et matrice SMI), ainsi que la suite complète.

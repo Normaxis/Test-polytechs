@@ -13,7 +13,7 @@ function compile(name,s){for(const [from,to] of [['@/lib/document-file','./docum
 try{
 fs.writeFileSync(path.join(dir,'raw.mjs'),'export const database=()=>globalThis.qaDb;export const bucket=()=>globalThis.qaBucket;');
 fs.writeFileSync(path.join(dir,'access.mjs'),`export const checkOrigin=()=>true;export const requireRole=async(req,role)=>role==='editor'&&globalThis.qaUser.role==='reader'?{error:Response.json({error:'reader'},{status:403})}:{user:globalThis.qaUser};`);
-fs.writeFileSync(path.join(dir,'teams.mjs'),`export const teamsAllowed=async()=>globalThis.qaAllowed;export const someTeamAllowed=teamsAllowed;export const accessibleTeams=async()=>new Set(globalThis.qaAllowed?['qsse']:[]);`);
+fs.writeFileSync(path.join(dir,'teams.mjs'),`export const teamsAllowed=async()=>globalThis.qaAllowed;export const someTeamAllowed=teamsAllowed;export const teamContentVisible=(allowed,ids)=>(!ids.includes('rh')||allowed.has('rh'))&&(!ids.length||ids.some(id=>allowed.has(id)));export const accessibleTeams=async()=>new Set(globalThis.qaAllowed?['qsse']:[]);`);
 fs.writeFileSync(path.join(dir,'ged-server.mjs'),`export const gedUsers=async()=>[{id:'admin',qsse:true},{id:'editor',qsse:false}];export const gedDocuments=async()=>new Map();`);
 fs.writeFileSync(path.join(dir,'gmao-server.mjs'),'export const gmaoTicketContributor=async()=>false;export const gmaoTicketReader=async()=>false;');
 compile('document-file',fs.readFileSync('lib/document-file.ts','utf8'));compile('hub',fs.readFileSync('lib/hub.ts','utf8'));compile('quality-actions',fs.readFileSync('lib/quality-actions.ts','utf8'));

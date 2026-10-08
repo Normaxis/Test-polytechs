@@ -14,7 +14,7 @@ function compile(name,source){fs.writeFileSync(path.join(dir,name+'.mjs'),ts.tra
 try{
   fs.writeFileSync(path.join(dir,'raw.mjs'),'export const database=()=>globalThis.auditDatabase;export const bucket=()=>{throw Error("Unexpected storage access")};');
   fs.writeFileSync(path.join(dir,'access.mjs'),'export const checkOrigin=()=>true;export const requireRole=async()=>({user:{id:"tester",displayName:"QSSE",role:"admin"}});');
-  fs.writeFileSync(path.join(dir,'teams.mjs'),'export const teamsAllowed=async()=>true;export const accessibleTeams=async()=>new Set(["qsse"]);');
+  fs.writeFileSync(path.join(dir,'teams.mjs'),'export const teamsAllowed=async()=>true;export const teamContentVisible=(allowed,ids)=>(!ids.includes("rh")||allowed.has("rh"))&&(!ids.length||ids.some(id=>allowed.has(id)));export const accessibleTeams=async()=>new Set(["qsse"]);');
   compile('record-access',fs.readFileSync('lib/record-access.ts','utf8').replaceAll("'@/db/raw'","'./raw.mjs'").replaceAll("'./team-access'","'./teams.mjs'"));
   fs.writeFileSync(path.join(dir,'source.mjs'),'export const evrpSource=null;');
   for(const name of ['modules','workflows','evrp','navigation'])compile(name,fs.readFileSync('lib/'+name+'.ts','utf8').replaceAll("'./modules'","'./modules.mjs'"));
