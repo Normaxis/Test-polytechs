@@ -15,4 +15,11 @@ export function reorderWidgets(widgets:Widget[],source:string,target:string){con
 
 // Shared by the editor, renderer and API validation; exact hosts prevent suffix spoofing.
 export const embedProviders=['Power BI','Microsoft Forms','SharePoint','Sway','YouTube','Vimeo','Google Calendar','Looker Studio'] as const;
-export function safeEmbedUrl(value:string){try{if(!value||value.length>2000)return false;const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.port)return false;const hosts=['app.powerbi.com','forms.office.com','forms.cloud.microsoft','sway.office.com','sway.cloud.microsoft','www.youtube.com','www.youtube-nocookie.com','player.vimeo.com','calendar.google.com','lookerstudio.google.com'];return hosts.includes(u.hostname)||/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.sharepoint\.com$/.test(u.hostname)}catch{return false}}
+export function safeEmbedUrl(value:string){try{if(!value||value.length>2000||/[<>"'\\]/.test(value))return false;const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.port)return false;const hosts=['app.powerbi.com','forms.office.com','forms.cloud.microsoft','sway.office.com','sway.cloud.microsoft','www.youtube.com','www.youtube-nocookie.com','player.vimeo.com','calendar.google.com','lookerstudio.google.com'];return hosts.includes(u.hostname)||/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.sharepoint\.com$/.test(u.hostname)}catch{return false}}
+
+export function normalizeEmbedUrl(value:string){
+  let url=value.trim();
+  if(/^<iframe\b/i.test(url)){const src=url.match(/\ssrc\s*=\s*(?:"([^"]*)"|'([^']*)')/i);if(!src)return '';url=src[1]??src[2]??''}
+  else url=url.split(/["'<>]/,1)[0];
+  return url.replace(/&amp;|&#0*38;|&#x0*26;/gi,'&').replace(/\\&/g,'&').trim();
+}
