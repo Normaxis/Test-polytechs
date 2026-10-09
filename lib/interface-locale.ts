@@ -6,6 +6,8 @@ export type Locale=keyof typeof languages;
 const rows:[string,string,string,string,string][]=[
 ['SMI','IMS','IMS','SGI','SGI'],
 ['Dashboard','Dashboard','Dashboard','Cruscotto','Panel'],
+['Mes actions','My actions','Meine Maßnahmen','Le mie azioni','Mis acciones'],
+['Mes tickets','My tickets','Meine Tickets','I miei ticket','Mis tickets'],
 ['Mon travail','My work','Meine Aufgaben','Il mio lavoro','Mi trabajo'],
 ['Tickets','Tickets','Tickets','Ticket','Tickets'],
 ['Routines','Routines','Routinen','Routine','Rutinas'],
