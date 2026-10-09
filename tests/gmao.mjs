@@ -47,5 +47,29 @@ assert.ok(db.prepare('SELECT count(*) n FROM gmao_history WHERE entity_id=?').ge
 // A ticket edit racing between read and transaction must abort the GMAO mutation without losing the edit.
 const origBatch=globalThis.gmaoDb.batch;let raced=false;globalThis.gmaoDb.batch=async ss=>{if(!raced){raced=true;db.prepare('UPDATE hub_tickets SET revision=revision+1 WHERE id=?').run(request.ticketId)}return origBatch(ss)};const before=row('orders',id);await result({operation:'order',id,revision:before.revision,data:{...before.data,title:'Tentative simultanée'}},409);assert.equal(row('orders',id).data.title,before.data.title);globalThis.gmaoDb.batch=origBatch;
 db.exec("INSERT INTO teams VALUES('rh','RH',2,'direction');INSERT INTO team_access VALUES('rh',0)");const secretTicket={...lib.newOrder(),...{title:'Secret RH',teams:['rh','maintenance'],actions:[],responsibles:[],category:'Qualité',status:'Ouvert',pilot:'',due:''}};db.prepare('INSERT INTO hub_tickets VALUES(?,?,1,?,?,?)').run('rh-secret',JSON.stringify(secretTicket),'2026','2026','Admin');db.prepare('INSERT INTO hub_files VALUES(?,?,?,?,?,?,?)').run('rh-file','rh-secret','secret.pdf','application/pdf',5,'Admin','2026');db.prepare('INSERT INTO hub_notifications VALUES(?,?,?,?,0,?)').run('rh-notification','tech','Secret RH','/tickets?id=rh-secret','2026');globalThis.gmaoUser=users.tech;assert.equal((await hub.GET(new Request('https://example.test/api?scope=ticket&id=rh-secret'))).status,403);assert.equal((await file.GET(new Request('https://example.test/api?id=rh-file'))).status,403);const rhList=await (await hub.GET(new Request('https://example.test/api?scope=tickets'))).json();assert.ok(!rhList.rows.some(r=>r.id==='rh-secret'));const rhOverview=await (await hub.GET(new Request('https://example.test/api?scope=overview-stats&team=maintenance'))).json();assert.ok(!rhOverview.recent.some(r=>r.id==='rh-secret'));const rhNotifs=await (await hub.GET(new Request('https://example.test/api?scope=notifications'))).json();assert.ok(!rhNotifs.notifications.some(r=>r.id==='rh-notification'));db.prepare('INSERT INTO team_members VALUES(?,?,?)').run('rh','tech','viewer');assert.equal((await hub.GET(new Request('https://example.test/api?scope=ticket&id=rh-secret'))).status,200);assert.equal((await post(hub,{action:'comment',ticketId:'rh-secret',body:'Interdit en consultation',recipients:[]})).status,403);db.prepare('DELETE FROM team_members WHERE team_id=? AND user_id=?').run('rh','tech');assert.equal((await hub.GET(new Request('https://example.test/api?scope=ticket&id=rh-secret'))).status,403);console.log('RH : service fermé même si configuré ouvert, ticket multiservice, accès direct, fichiers, statistiques, notifications, consultation sans modification et retrait immédiat des droits vérifiés.');
+// Context targeting is applied on the server, including for administrators and parent teams.
+globalThis.gmaoUser=users.admin;
+db.exec("INSERT INTO teams VALUES('direction','Direction',1,NULL);CREATE TABLE hub_communications(id TEXT PRIMARY KEY,data TEXT,revision INTEGER,created_at TEXT,updated_at TEXT,author TEXT);CREATE TABLE hub_routines(id TEXT PRIMARY KEY,data TEXT,revision INTEGER,updated_at TEXT);CREATE TABLE hub_runs(id TEXT,routine_id TEXT,date TEXT,data TEXT);");
+for(const [key,teams] of [['prod',['production']],['rd',['rd']],['shared',['production','rd']]]){
+ const data={title:key,teams,actions:[],responsibles:[],category:'Qualité',status:'Ouvert',pilot:'',due:''};
+ db.prepare('INSERT INTO hub_tickets VALUES(?,?,1,?,?,?)').run('scope-'+key,JSON.stringify(data),'2027','2027','Admin');
+ db.prepare('INSERT INTO hub_communications VALUES(?,?,1,?,?,?)').run(key,JSON.stringify({...data,body:key,sourceTeam:'maintenance'}),'2027','2027','Admin');
+ db.prepare('INSERT INTO hub_routines VALUES(?,?,1,?)').run(key,JSON.stringify({...data,active:true,start:'2027-01-01',repeat:'none',questions:[]}),'2027');
+}
+const getScope=async query=>hub.GET(new Request('https://example.test/api?'+query));
+for(const team of ['production','rd']){
+ const tickets=await (await getScope('scope=tickets&team='+team)).json();assert.ok(tickets.rows.every(r=>r.data.teams.includes(team)));assert.ok(tickets.rows.some(r=>r.id==='scope-shared'));
+ const messages=await (await getScope('scope=communications&team='+team)).json();assert.equal(messages.rows.length,2);assert.ok(messages.rows.every(r=>r.data.teams.includes(team)));
+ const routines=await (await getScope('scope=routines&from=2027-01-01&to=2027-01-31&team='+team)).json();assert.equal(routines.routines.length,2);
+}
+assert.equal((await getScope('scope=ticket&id=scope-rd&team=production')).status,404);
+assert.equal((await getScope('scope=run&id=rd&date=2027-01-01&team=production')).status,404);
+assert.equal((await (await getScope('scope=communications&team=maintenance')).json()).rows.length,0,'An emitter is not automatically a recipient');
+assert.deepEqual((await (await getScope('scope=overview-stats&team=direction&children=1')).json()).recent,[],'Hierarchy does not imply targeting');
+globalThis.gmaoUser=users.requester;
+assert.equal((await getScope('scope=communications&team=rd')).status,403);
+assert.equal((await getScope('scope=tickets&team=rd')).status,403);
+assert.equal((await getScope('scope=tickets&team=unknown')).status,403);
+console.log('Team context: server-filtered tickets, communications, routines, direct links, shared recipients, parent isolation and unauthorized services passed.');
 console.log('GMAO : droits par service, demandes/tickets/fichiers, workflow et contrôle, historique, conflits concurrents, préventif sans doublons, fin de mois et stock fractionnaire vérifiés.');
 }finally{db.close();fs.rmSync(dir,{recursive:true,force:true})}

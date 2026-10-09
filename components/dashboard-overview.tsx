@@ -13,16 +13,16 @@ type Communication={id:string;data:{title:string;body:string;teams:string[];sour
 type Run={routine_id?:string;routineId?:string;date:string;data:{completed:boolean}};
 
 export function DashboardOverview({teamId,teamName,teams,refresh}:{teamId:string;teamName:string;teams:Team[];refresh:number}){
-  const selectedTeam=teams.find(t=>t.id===teamId),scopeIds=selectedTeam?.rank===1?[teamId,...teams.filter(t=>t.parent_id===teamId).map(t=>t.id)]:[teamId];
+  const scopeIds=[teamId];
   const [chartModesByCategory,setChartModesByCategory]=useState<Record<string,Widget['chartType']>>({});
   useEffect(()=>{const stored:Record<string,Widget['chartType']>={};for(const category of ['Sécurité','Qualité','Environnement','Production','Maintenance','R&D','Ressources humaines','Autre']){const mode=localStorage.getItem('polytechs-chart-'+teamId+'-'+category);if(mode&&Object.hasOwn(chartModes,mode))stored[category]=mode as Widget['chartType']}setChartModesByCategory(stored)},[teamId]);
   const [routines,setRoutines]=useState<Row<Routine>[]>([]),[runs,setRuns]=useState<Run[]>([]),[messages,setMessages]=useState<Communication[]>([]),[tickets,setTickets]=useState<Ticket[]>([]),[counts,setCounts]=useState<Record<string,Count>>({}),[statsDate,setStatsDate]=useState(''),[error,setError]=useState(false);
   const today=todayParis(),month=today.slice(0,7),from=month+'-01',to=month+'-'+String(new Date(Number(month.slice(0,4)),Number(month.slice(5,7)),0).getDate()).padStart(2,'0');
-  useEffect(()=>{let live=true;setError(false);setCounts({});setTickets([]);setStatsDate('');Promise.all([
-    fetch('/api/hub?scope=routines&from='+from+'&to='+to).then(r=>{if(!r.ok)throw Error();return r.json()}),
-    fetch('/api/hub?scope=communications').then(r=>{if(!r.ok)throw Error();return r.json()}),
-    fetch('/api/hub?scope=overview-stats&team='+encodeURIComponent(teamId)+(selectedTeam?.rank===1?'&children=1':'')).then(r=>{if(!r.ok)throw Error();return r.json()})
-  ]).then(([a,b,c]:any[])=>{if(live){setRoutines(a.routines);setRuns(a.runs);setMessages(b.rows);setTickets(c.recent);setCounts(c.counts);setStatsDate(c.updatedAt)}}).catch(()=>{if(live)setError(true)});return()=>{live=false}},[from,to,teamId,selectedTeam?.rank,refresh]);
+  useEffect(()=>{let live=true;setError(false);setCounts({});setTickets([]);setMessages([]);setRoutines([]);setRuns([]);setStatsDate('');Promise.all([
+    fetch('/api/hub?scope=routines&from='+from+'&to='+to+'&team='+encodeURIComponent(teamId)).then(r=>{if(!r.ok)throw Error();return r.json()}),
+    fetch('/api/hub?scope=communications&team='+encodeURIComponent(teamId)).then(r=>{if(!r.ok)throw Error();return r.json()}),
+    fetch('/api/hub?scope=overview-stats&team='+encodeURIComponent(teamId)).then(r=>{if(!r.ok)throw Error();return r.json()})
+  ]).then(([a,b,c]:any[])=>{if(live){setRoutines(a.routines);setRuns(a.runs);setMessages(b.rows);setTickets(c.recent);setCounts(c.counts);setStatsDate(c.updatedAt)}}).catch(()=>{if(live)setError(true)});return()=>{live=false}},[from,to,teamId,refresh]);
   const events=useMemo(()=>routines.filter(r=>r.data.active&&r.data.teams.some(id=>scopeIds.includes(id))).flatMap(r=>occurrenceDates(r.data,from,to).map(date=>({routine:r,date}))),[routines,teamId,teams,from,to]);
   const complete=events.filter(e=>runs.some(r=>(r.routine_id||r.routineId)===e.routine.id&&r.date===e.date&&r.data.completed)).length;
   const next=events.filter(e=>e.date>=today).sort((a,b)=>a.date.localeCompare(b.date))[0];
