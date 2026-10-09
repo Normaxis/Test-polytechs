@@ -71,5 +71,19 @@ assert.equal((await getScope('scope=communications&team=rd')).status,403);
 assert.equal((await getScope('scope=tickets&team=rd')).status,403);
 assert.equal((await getScope('scope=tickets&team=unknown')).status,403);
 console.log('Team context: server-filtered tickets, communications, routines, direct links, shared recipients, parent isolation and unauthorized services passed.');
+// A user fills existing actions but cannot change structure or publish team content.
+db.prepare("UPDATE team_members SET level='user' WHERE team_id='production' AND user_id='requester'").run();globalThis.gmaoUser=users.requester;
+const fillTicket={title:'À réaliser',description:'',category:'Qualité',teams:['production'],pilot:'requester',due:'',status:'Ouvert',responsibles:[],actions:[{id:'a',title:'Faire',done:false,pilot:'requester',due:''}]};
+db.prepare('INSERT INTO hub_tickets VALUES(?,?,1,?,?,?)').run('fill-ticket',JSON.stringify(fillTicket),'2027','2027','Admin');
+assert.equal((await post(hub,{action:'ticket',id:'fill-ticket',revision:1,data:{...fillTicket,title:'Interdit'}})).status,403);
+assert.equal((await post(hub,{action:'ticket',id:'fill-ticket',revision:1,data:{...fillTicket,actions:[{...fillTicket.actions[0],done:true}]}})).status,200);
+assert.equal((await post(hub,{action:'comment',ticketId:'fill-ticket',body:'Fait',recipients:[]})).status,200);
+assert.equal((await post(hub,{action:'ticket',data:fillTicket})).status,403);
+assert.equal((await post(hub,{action:'communication',data:{title:'Interdit',body:'Texte',teams:['production'],sourceTeam:'production'}})).status,403);
+assert.equal((await post(hub,{action:'archive-ticket',id:'fill-ticket',revision:2,archive:true})).status,403);
+db.exec("ALTER TABLE hub_runs ADD COLUMN revision INTEGER;ALTER TABLE hub_runs ADD COLUMN author TEXT;ALTER TABLE hub_runs ADD COLUMN updated_at TEXT;");
+assert.equal((await post(hub,{action:'run',routineId:'prod',date:'2027-01-01',revision:0,data:{answers:[],notes:'Contrôle réalisé',completed:true}})).status,200);
+const ownIntervention=await hub.GET(new Request('https://example.test/api?scope=ticket&id='+request.ticketId));const ownData=await ownIntervention.json();assert.equal(ownData.gmaoContributor,false,'A data-entry role must not inherit structural GMAO ticket editing through requester identity');
+console.log('User role: action completion and comments allowed; ticket structure, creation, communications and archive denied.');
 console.log('GMAO : droits par service, demandes/tickets/fichiers, workflow et contrôle, historique, conflits concurrents, préventif sans doublons, fin de mois et stock fractionnaire vérifiés.');
 }finally{db.close();fs.rmSync(dir,{recursive:true,force:true})}

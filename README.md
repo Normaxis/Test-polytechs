@@ -530,3 +530,11 @@ L’administration des droits reste réservée aux administrateurs et ses modifi
 Les administrateurs conservent tous les droits : ce rôle doit être attribué uniquement aux personnes habilitées. Classer les dossiers RH dans le service RH / processus GED S3 (ou périmètre I) est nécessaire ; l’application ne devine pas la sensibilité d’un texte placé dans un service public. Les droits SharePoint/Power BI des contenus intégrés restent gérés par ces services externes. Les tests locaux ne constituent pas une attestation de sécurité absolue ni un test d’intrusion en production.
 
 Vérifications : `tests/security.mjs` (droits administrateur, dashboards, retrait immédiat, agrégats), `tests/gmao.mjs` (tickets RH multiservices, fichiers, notifications, statistiques), `tests/smi.mjs` (catalogue GED, accès direct, anciens participants, fichiers et matrice SMI), ainsi que la suite complète.
+
+### Rôles locaux des équipes
+
+Les niveaux stockés dans `team_members.level` sont : `viewer` (Consultation), `user` (Utilisateur : saisie des indicateurs, actions réalisées, commentaires/pièces jointes, comptes rendus d’audit), `contributor` (Coordinateur : gestion des contenus et dashboards), `team_admin` (Administrateur d’équipe : coordination, nom et membres). Les anciens contributeurs conservent leurs droits sous le libellé Coordinateur. Aucune migration ni modification automatique des membres existants.
+
+Un rôle local ne confère aucun droit global, aucune gestion d’une autre équipe et aucun droit d’ouvrir une équipe à tous. Les comptes globaux lecteurs restent en lecture seule. Les modules spécialisés (GED, SMI, DUERP, GMAO) conservent leurs habilitations supplémentaires ; le rôle Utilisateur n’autorise pas la modification de leurs paramètres ou documents. Les changements de rôle sont appliqués côté serveur à chaque requête et journalisés. Les administrateurs locaux ne peuvent pas modifier leur propre rôle.
+
+Les équipes déjà explicitement ouvertes conservent leur comportement historique pour les non-membres. Un rôle local explicite restreint cette contribution (Consultation / Utilisateur). Pour réserver l’accès aux membres, un administrateur général doit restreindre l’équipe ; RH reste toujours restreint.
