@@ -34,7 +34,12 @@ try{
  assert.equal(objects.size,1);
  assert.equal((await api.PUT(req('PUT','one',png,{'content-type':'image/png'}))).status,200);
  assert.equal(objects.size,1,'Replacing a photo cleans up the previous file');
- assert.equal((await photo.GET(req('GET','two'))).status,404,'Another account cannot retrieve the photo');
+ assert.equal((await photo.GET(req('GET','two'))).status,404,'Default photo endpoint remains scoped to the signed-in account');
+ const directoryRequest=(user,id)=>new Request('https://example.test/api/profile/photo?user='+encodeURIComponent(id),{headers:{'x-test-user':user}});
+ assert.equal((await photo.GET(directoryRequest('', 'one'))).status,401,'Directory photos require authentication');
+ assert.equal((await photo.GET(directoryRequest('two','one'))).status,200,'Members can see directory profile photos');
+ assert.equal((await photo.GET(directoryRequest('two','missing'))).status,404);
+ assert.equal((await photo.GET(directoryRequest('two',"one' OR 1=1--"))).status,404);
  const savedPhoto=await photo.GET(req());assert.equal(savedPhoto.status,200);assert.equal(savedPhoto.headers.get('cache-control'),'private, no-store');assert.equal(savedPhoto.headers.get('x-content-type-options'),'nosniff');assert.deepEqual(new Uint8Array(await savedPhoto.arrayBuffer()),new Uint8Array(png));
  assert.equal((await api.DELETE(req('DELETE'))).status,200);assert.equal(objects.size,0);assert.equal((await (await api.GET(req())).json()).locale,'es','Removing a photo keeps the chosen language');
  assert.equal(db.prepare("SELECT role FROM users WHERE id='one'").get().role,'reader');
