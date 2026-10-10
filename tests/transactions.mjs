@@ -47,6 +47,17 @@ INSERT INTO evrp_units VALUES('UT1');INSERT INTO epi_products VALUES('EPI1',3,1,
     assert.equal((await post(evrp,{action:kind,id,revision:2,data})).status,200);
     assert.equal(sqlite.prepare('SELECT count(*) n FROM '+history).get().n,1);
   }
+  sqlite.exec("CREATE TABLE users(id TEXT PRIMARY KEY,display_name TEXT);INSERT INTO users VALUES('pilot-a','Alex Martin'),('pilot-b','Alex Martin');");
+  const assigned=await post(records,{...base,owner:'Texte erroné',details:{...base.details,ownerId:'pilot-b'}});assert.equal(assigned.status,200);const assignedId=(await assigned.json()).id;
+  const saved=sqlite.prepare('SELECT owner,details FROM records WHERE id=?').get(assignedId);assert.equal(saved.owner,'Alex Martin');assert.equal(JSON.parse(saved.details).ownerId,'pilot-b');
+  assert.equal((await post(records,{...base,details:{...base.details,ownerId:'unknown'}})).status,400);
+  const namedAction={unitCode:'UT1',description:'Contrôle nominatif',status:'À définir',ownerId:'pilot-b',owner:'Texte erroné'};
+  const assignment=await post(evrp,{action:'action',data:namedAction});assert.equal(assignment.status,200);const assignmentId=(await assignment.json()).id;
+  const namedSaved=JSON.parse(sqlite.prepare('SELECT data FROM evrp_actions WHERE id=?').get(assignmentId).data);assert.equal(namedSaved.ownerId,'pilot-b');assert.equal(namedSaved.owner,'Alex Martin');
+  assert.equal((await post(evrp,{action:'action',data:{...namedAction,ownerId:'unknown'}})).status,400);
+  assert.equal((await post(evrp,{action:'action',id:assignmentId,revision:1,data:{...namedAction,ownerId:'',owner:'Service QSSE'}})).status,200);
+  assert.equal(JSON.parse(sqlite.prepare('SELECT data FROM evrp_actions WHERE id=?').get(assignmentId).data).ownerId,'');
+  console.log('Affectations QSE/EVRP : identifiant persistant, homonymes, libellé canonique, compte inconnu et retrait du rattachement vérifiés.');
   const engaged={unitCode:'UT1',description:'Contrôler la protection',status:'En cours'};
   assert.equal((await post(evrp,{action:'action',data:engaged})).status,400,'Une action engagée exige un pilote et une échéance');
   assert.equal((await post(evrp,{action:'action',data:{...engaged,owner:'QSSE',due:'2026-01-01',start:'2026-02-01'}})).status,400,'Le début doit précéder l’échéance');

@@ -22,11 +22,22 @@ Régressions ajoutées : recherche au-delà de 500 tickets et communications, ac
 
 Le contrôle interactif du rendu PC/tablette/mobile n’a pas été exécuté : l’outil de navigateur requis par le workflow Sites est indisponible. Les tests automatisés ne remplacent pas cette recette.
 
-## Suites de l’audit non closes par cette livraison
+## Deuxième livraison
 
-- Harmonisation complète des anciens écrans QSE et DUERP avec le cadre de navigation commun.
-- Remplacement des confirmations natives restantes dans les modules historiques et pagination des listes GMAO.
-- Remplacement progressif de tous les pilotes historiques saisis en texte par des identifiants persistants, avec interface de résolution manuelle des homonymes. Le rapprochement actuel ne constitue pas une migration.
-- Internationalisation exhaustive : certains textes explicatifs restent en français.
-- Consolidation exhaustive des CSS historiques et revue responsive/accessibilité en navigateur.
+- Cadre commun de navigation pour les registres QSE et le DUERP, avec conservation des formulaires, historiques, exports et paramètres des comptes.
+- Pagination des registres QSE et de l’échéancier. La GMAO avait déjà une pagination de listes : contrôles harmonisés et pagination ajoutée au planning, suppression de sa limite d’affichage à 200 lignes.
+- Confirmations de fermeture intégrées dans la GMAO, le DUERP, le plan d’actions, le SMI, les routines et les dotations EPI. La touche Échap ou Annuler conserve les modifications.
+- Affectation nominative des responsables QSE et des pilotes DUERP par recherche dans l’annuaire. Identifiant persistant, nom canonique vérifié par le serveur, rejet des comptes inexistants et retrait explicite du rattachement. Aucun remplacement massif des responsables historiques.
+- Vue « Affectation à confirmer » dans les actions pour les noms sans compte résolu. Les deux personnes portant le même nom sont distinguées par leur identifiant dans le sélecteur.
+- Fermeture d’une fiche QSE : le lien courant est conservé si l’utilisateur annule l’abandon.
+- Traductions complémentaires des commandes de confirmation, d’affectation, de maintenance et de prévention dans les cinq langues.
+
+Validation complémentaire : TypeScript, tests de transactions QSE/EVRP (identifiants, homonymes, comptes inexistants, retrait, concurrence, EPI), tests de sécurité et compilation de production. La recette visuelle interactive demeure non exécutée.
+
+## Points restant à valider ou à traiter
+
+- Recette interactive PC/tablette/mobile, clavier et lecteurs d’écran : outil de navigateur requis indisponible dans cet environnement.
+- Internationalisation exhaustive des longs textes métier et des messages dynamiques : le catalogue de traduction est enrichi mais reste partiel.
+- Consolidation exhaustive des anciennes règles CSS ; la livraison unifie les structures sans supprimer les styles métier encore utilisés.
 - Très gros volumes : la recherche liste procède par lots de 500 lignes autorisées côté serveur. Les résultats sont paginés, mais le comptage parcourt les lots ; prévoir un index de recherche normalisé si le volume augmente fortement.
+- Attribution des anciens pilotes : décision manuelle depuis les fiches, sans migration arbitraire des homonymes ou des services.
