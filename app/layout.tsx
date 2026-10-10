@@ -6,9 +6,6 @@ import "./hub.css";
 export const metadata: Metadata = {
   title: "Polytechs · Espace QSE",
   description: "Pilotage qualité, sécurité et environnement.",
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",

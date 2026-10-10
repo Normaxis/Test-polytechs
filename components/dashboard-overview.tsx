@@ -27,7 +27,7 @@ export function DashboardOverview({teamId,teamName,teams,refresh}:{teamId:string
   const complete=events.filter(e=>runs.some(r=>(r.routine_id||r.routineId)===e.routine.id&&r.date===e.date&&r.data.completed)).length;
   const next=events.filter(e=>e.date>=today).sort((a,b)=>a.date.localeCompare(b.date))[0];
   const message=messages.find(m=>m.data.teams.some(id=>scopeIds.includes(id)));
-  const colors:Record<string,string>={'Sécurité':'#d9f0df','Qualité':'#e6e4f5','Environnement':'#dceef6'};
+  const colors:Record<string,string>={'Sécurité':'#fff1e8','Qualité':'#f2edfc','Environnement':'#eaf7ed'};
   const categories=[...new Set(['Sécurité','Qualité','Environnement',...Object.keys(counts)])];
   return <section className="dashboard-overview" aria-label={'Vue d’ensemble de '+teamName}>
     <div className="overview-top">

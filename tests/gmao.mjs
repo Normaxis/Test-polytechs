@@ -85,5 +85,14 @@ db.exec("ALTER TABLE hub_runs ADD COLUMN revision INTEGER;ALTER TABLE hub_runs A
 assert.equal((await post(hub,{action:'run',routineId:'prod',date:'2027-01-01',revision:0,data:{answers:[],notes:'Contrôle réalisé',completed:true}})).status,200);
 const ownIntervention=await hub.GET(new Request('https://example.test/api?scope=ticket&id='+request.ticketId));const ownData=await ownIntervention.json();assert.equal(ownData.gmaoContributor,false,'A data-entry role must not inherit structural GMAO ticket editing through requester identity');
 console.log('User role: action completion and comments allowed; ticket structure, creation, communications and archive denied.');
+// Search/pagination must reach older records beyond the original 500-row cap.
+for(let i=0;i<520;i++)db.prepare('INSERT INTO hub_tickets VALUES(?,?,1,?,?,?)').run('page-'+i,JSON.stringify({...fillTicket,title:i===519?'Écart ancien introuvable':'Pagination '+i}),'2020','2020','Admin');
+let pageResult=await (await getScope('scope=tickets&page=0&search=ecart%20ancien')).json();assert.equal(pageResult.total,1);assert.equal(pageResult.rows[0].id,'page-519');
+pageResult=await (await getScope('scope=tickets&page=1&search=Pagination')).json();assert.equal(pageResult.total,519);assert.equal(pageResult.rows.length,15);assert.equal(pageResult.pages,35);
+const page0=await (await getScope('scope=tickets&page=0&search=Pagination')).json();assert.ok(pageResult.rows.every(r=>!page0.rows.some(first=>first.id===r.id)));
+assert.equal((await (await getScope('scope=tickets&page=0&search=Secret%20RH')).json()).total,0,'Hidden data must never appear in search totals');
+for(let i=0;i<510;i++)db.prepare('INSERT INTO hub_communications VALUES(?,?,1,?,?,?)').run('msg-'+i,JSON.stringify({title:i===509?'Ancienne note':'Message '+i,body:'Information',teams:['production'],sourceTeam:'maintenance'}),'2020','2020','Admin');
+const messageSearch=await (await getScope('scope=communications&page=0&search=ancienne&source=maintenance')).json();assert.equal(messageSearch.total,1);assert.equal(messageSearch.rows[0].id,'msg-509');
+console.log('Pagination/search: older than 500 records, accent folding, totals, stable pages, communications and RH isolation passed.');
 console.log('GMAO : droits par service, demandes/tickets/fichiers, workflow et contrôle, historique, conflits concurrents, préventif sans doublons, fin de mois et stock fractionnaire vérifiés.');
 }finally{db.close();fs.rmSync(dir,{recursive:true,force:true})}

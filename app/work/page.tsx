@@ -11,7 +11,7 @@ function Work({account}:{account:Account}){
   async function load(){setLoading(true);try{const d=await hubRequest('/api/work');setItems(d.items);setError('')}catch(e){setError((e as Error).message)}finally{setLoading(false)}}
   useEffect(()=>{load()},[]);
   const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Paris',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-  const mine=(item:WorkItem)=>item.pilotId===account.id||!!item.pilot&&item.pilot.trim().toLocaleLowerCase('fr')===account.displayName.trim().toLocaleLowerCase('fr');
+  const mine=(item:WorkItem)=>item.pilotId===account.id;
   const personal=items.filter(mine),unassigned=items.filter(i=>!i.pilot&&!i.pilotId&&!i.closed),late=personal.filter(i=>!i.closed&&i.due&&i.due<today);
   const visible=useMemo(()=>items.filter(i=>(view==='all'||mine(i))&&(status==='all'||status==='open'&&!i.closed||status==='late'&&!i.closed&&!!i.due&&i.due<today||status==='verify'&&i.status==='À vérifier'||status==='unassigned'&&!i.closed&&!i.pilot&&!i.pilotId)&&(i.title+' '+i.source+' '+i.category+' '+i.pilot).toLocaleLowerCase('fr').includes(query.toLocaleLowerCase('fr'))).sort((a,b)=>Number(a.closed)-Number(b.closed)||(a.due||'9999').localeCompare(b.due||'9999')),[items,view,status,query,account.id,account.displayName,today]);
   const list=useListPage(visible,[view,status,query].join('|'));

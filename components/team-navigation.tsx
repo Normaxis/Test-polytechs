@@ -55,7 +55,7 @@ export function TeamTree({teams,boards,selected,disabled,onSelect,onTeam}:{teams
           {t.id==='maintenance'&&<div className="qsse-shortcuts"><div className="qsse-section"><p>GMAO</p>{[['Vue d’ensemble','overview',LayoutDashboard],['Demandes & interventions','orders',Wrench],['Équipements','assets',Settings2],['Maintenance préventive','plans',CalendarDays],['Planning','planning',CalendarDays],['Pièces & stocks','parts',ShoppingCart]].map(([label,tab,Icon]:any)=><a href={'/maintenance?tab='+tab} key={tab}><Icon size={15}/><span>{label}</span></a>)}</div></div>}
           {t.id==='qsse'&&teamBoards.length>0&&<p className="qsse-board-label">Tableaux de bord</p>}
           {teamBoards.map(b=>onSelect?<button key={b.id} disabled={disabled} aria-current={selected===b.id?'page':undefined} onClick={()=>onSelect(b.id)}><LayoutDashboard size={14}/><span>{b.title}</span></button>:<a key={b.id} href={'/unites?board='+encodeURIComponent(b.id)}><LayoutDashboard size={14}/><span>{b.title}</span></a>)}
-          {onTeam&&<button disabled={disabled} className="team-open" onClick={()=>t.id==='maintenance'?location.assign('/maintenance'):onTeam(t)}>Ouvrir {t.rank===1?'la direction':'le service'}</button>}
+          {onTeam?<button disabled={disabled} className="team-open" onClick={()=>t.id==='maintenance'?location.assign('/maintenance'):onTeam(t)}>Ouvrir {t.rank===1?'la direction':'le service'}</button>:<a className="team-open" href={disabled?undefined:t.id==='maintenance'?'/maintenance':'/unites?team='+encodeURIComponent(t.id)}>Ouvrir {t.rank===1?'la direction':'le service'}</a>}
           {!teamBoards.length&&<small className="team-no-board">Aucun tableau</small>}
         </div>
       </details>

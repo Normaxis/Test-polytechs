@@ -4,6 +4,13 @@ export type Locale=keyof typeof languages;
 // Exact UI labels only: free text entered by teams is never sent to a translation service.
 // Each row is French, English, German, Italian, Spanish.
 const rows:[string,string,string,string,string][]=[
+['Coordinateur','Coordinator','Koordinator','Coordinatore','Coordinador'],
+['Administrateur d’équipe','Team administrator','Teamadministrator','Amministratore del team','Administrador del equipo'],
+['Membres et paramètres','Members and settings','Mitglieder und Einstellungen','Membri e impostazioni','Miembros y ajustes'],
+['Appliquer les droits','Apply permissions','Berechtigungen anwenden','Applica autorizzazioni','Aplicar permisos'],
+['Renseigner les indicateurs','Enter indicator values','Kennzahlen eintragen','Inserisci indicatori','Introducir indicadores'],
+['Rechercher une communication…','Search communications…','Mitteilungen suchen…','Cerca comunicazioni…','Buscar comunicaciones…'],
+
 ['SMI','IMS','IMS','SGI','SGI'],
 ['Dashboard','Dashboard','Dashboard','Cruscotto','Panel'],
 ['Mes actions','My actions','Meine Maßnahmen','Le mie azioni','Mis acciones'],
